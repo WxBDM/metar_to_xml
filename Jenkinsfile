@@ -7,24 +7,24 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Beginning build step'
-                sh './pip.sh'
+                echo '=== Beginning build step ==='
+                sh './shell/pip.sh'
                 echo 'Build step completed.'
             }
         }
         stage("Unittest") {
             steps {
-                echo 'This is the unittest stage.'
+                echo ''=== This is the unittest stage. ==='
             }
         }
         stage("PyTest") {
             steps {
-                echo 'This is the pytest stage.'
+                echo '===This is the pytest stage. ==='
             }
         }
         stage("METAR Test") {
             steps {
-                echo "This is the metar test stage."
+                echo '=== This is the metar test stage. ==='
             }
         }
     }
