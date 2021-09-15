@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent { docker { image 'python:3.8.3' } }
+    agent any
 
     stages {
         stage('Build') {
@@ -21,20 +21,16 @@ pipeline {
             steps {
                 echo 'This is the pytest stage.'
             }
-            always {
-                
-            }
         }
         stage("METAR Test") {
             steps {
                 echo "This is the metar test stage."
             }
         }
-	post {
-		always {
-			junit '**/target/reports/test-*.xml'
-		}
-	}
     }
+    post {
+  		always {
+  			junit '**/target/reports/test-*.xml'
+  		}
+  	}
 }
-
