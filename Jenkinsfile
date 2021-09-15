@@ -1,15 +1,14 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent any
-
+    agent {
+        docker { image 'python:3' }
+    }
     stages {
         stage('Build') {
             steps {
                 echo 'Beginning build step'
-                virtualenv venv --distribute
-                . venv/bin/activate
-                sh 'pip install -r requirements.txt'
+                sh './pip.sh'
                 echo 'Build step completed.'
             }
         }
