@@ -8,7 +8,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== Beginning build step ==='
-                sh 'chmod 777 shell/pip/sh && ./shell/pip.sh'
+                sh 'chmod 777 ./shell/pip.sh && ./shell/pip.sh'
                 echo 'Build step completed.'
             }
         }
