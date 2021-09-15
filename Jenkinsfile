@@ -28,9 +28,4 @@ pipeline {
             }
         }
     }
-    post {
-  		always {
-  			junit '**/target/reports/test-*.xml'
-  		}
-  	}
 }
