@@ -7,7 +7,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Beginning build step'
-                git branch: 'main', url: 'https://github.com/WxBDM/metar_to_xml'
+                virtualenv venv --distribute
+                . venv/bin/activate
                 sh 'pip install -r requirements.txt'
                 echo 'Build step completed.'
             }
