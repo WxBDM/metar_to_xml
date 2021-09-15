@@ -14,7 +14,7 @@ pipeline {
         }
         stage("Unittest") {
             steps {
-                echo ''=== This is the unittest stage. ==='
+                echo '=== This is the unittest stage. ==='
             }
         }
         stage("PyTest") {
