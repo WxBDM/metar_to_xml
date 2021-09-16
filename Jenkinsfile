@@ -8,7 +8,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== Beginning build step ==='
-                pip install -r requirements.txt
+                sh 'pip install -r requirements.txt'
                 echo 'Build step completed.'
             }
         }
