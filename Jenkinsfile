@@ -8,13 +8,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== Beginning build step ==='
-                sh 'python --version'
+                pip install -r requirements.txt
                 echo 'Build step completed.'
             }
         }
         stage("Unittest") {
             steps {
                 echo '=== This is the unittest stage. ==='
+                sh 'python3 tests/test_utils.py'
                 echo 'Unit testing finished.'
             }
         }
@@ -29,6 +30,11 @@ pipeline {
                 echo '=== This is the metar test stage. ==='
                 echo 'METAR testing finished.'
             }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
         }
     }
 }
