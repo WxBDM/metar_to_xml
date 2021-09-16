@@ -8,6 +8,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== Beginning build step ==='
+                sh 'python --version'
                 echo 'Build step completed.'
             }
         }
