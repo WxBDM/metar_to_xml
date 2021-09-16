@@ -8,23 +8,25 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== Beginning build step ==='
-                sh 'chmod 777 ./shell/pip.sh && ./shell/pip.sh'
                 echo 'Build step completed.'
             }
         }
         stage("Unittest") {
             steps {
                 echo '=== This is the unittest stage. ==='
+                echo 'Unit testing finished.'
             }
         }
         stage("PyTest") {
             steps {
                 echo '===This is the pytest stage. ==='
+                echo 'PyTest testing finished.'
             }
         }
         stage("METAR Test") {
             steps {
                 echo '=== This is the metar test stage. ==='
+                echo 'METAR testing finished.'
             }
         }
     }
