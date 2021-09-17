@@ -11,6 +11,7 @@ pipeline {
                   sh script:'''
                                 #/bin/bash
                                 echo "PATH is: $PATH"
+                                PATH=${PATH}:/usr/local/bin
                                   python3 --version
                                   python3 -m pip install --upgrade pip --user
                                   ls
