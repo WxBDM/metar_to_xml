@@ -5,11 +5,19 @@ pipeline {
         any { image 'python:3' }
     }
     stages {
-        stage('Build') {
+        stage('build') {
             steps {
-                echo '=== Beginning build step ==='
-                sh 'pip install -r requirements.txt'
-                echo 'Build step completed.'
+                withEnv(["HOME=${env.WORKSPACE}"]) {
+                  sh script:'''
+                                #/bin/bash
+                                echo "PATH is: $PATH"
+                                  python --version
+                                  python -m pip install --upgrade pip --user
+                                  ls
+                                  pip install --user -r requirements.txt
+                                  export PATH="$WORKSPACE/.local/bin:$PATH"
+                                    '''
+                }
             }
         }
         stage("Unittest") {
