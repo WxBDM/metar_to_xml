@@ -11,11 +11,12 @@ pipeline {
                   sh script:'''
                                 #/bin/bash
                                 echo "PATH is: $PATH"
-                                  python --version
-                                  python -m pip install --upgrade pip --user
+                                  python3 --version
+                                  python3 -m pip install --upgrade pip --user
                                   ls
                                   pip install --user -r requirements.txt
                                   export PATH="$WORKSPACE/.local/bin:$PATH"
+                                  echo "Path is: $PATH"
                                     '''
                 }
             }
