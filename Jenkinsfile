@@ -15,7 +15,7 @@ pipeline {
                                   python3 --version
                                   python3 -m pip install --upgrade pip --user
                                   ls
-                                  /usr/local/binpip install --user -r requirements.txt
+                                  /usr/local/bin/pip install --user -r requirements.txt
                                   export PATH="$WORKSPACE/.local/bin:$PATH"
                                   echo "Path is: $PATH"
                                     '''
