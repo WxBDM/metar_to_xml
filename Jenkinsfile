@@ -8,17 +8,17 @@ pipeline {
         stage('build') {
             steps {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                  sh script:'''
-                                #/bin/bash
-                                echo "PATH is: $PATH"
-                                PATH=${PATH}:/usr/local/bin
-                                  python3 --version
-                                  python3 -m pip install --upgrade pip --user
-                                  ls
-                                  /usr/local/bin/pip install --user -r requirements.txt
-                                  export PATH="$WORKSPACE/.local/bin:$PATH"
-                                  echo "Path is: $PATH"
-                                    '''
+
+                                    //   sh script:'''
+                                    //                 #/bin/bash
+                                    //                 echo "PATH is: $PATH"
+                                    //                 PATH=${PATH}:/usr/local/bin
+                                    //                   python3 --version
+                                    //                   python3 -m pip install --upgrade pip --user
+                                    //                   python3 -m pip install --user -r requirements.txt
+                                    //                   export PATH="$WORKSPACE/.local/bin:$PATH"
+                                    //                   echo "Path is: $PATH"
+                                    //                     '''
                 }
             }
         }
