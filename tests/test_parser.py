@@ -1,15 +1,14 @@
-import unittest
 import pytest
 import sys
 sys.path.insert(0, '/Users/bdmolyne/Documents/metar_to_xml/src')
 from metar_to_xml.parser import Parser
 
-@pytest.mark.usefixtures("normal_metar")
-def test_metar(normal_metar):
-    expected = "KIAH"
-    actual = Parser(normal_metar).location()
-    assert expected == actual
-
+@pytest.mark.usefixtures("all_metars")
+def test_metar(all_metars):
+    expected = ["KIAH", 'KGNV', 'KNID', 'KTPA', 'KP60']
+    for metar, expected_val in zip(all_metars, expected):
+        actual = Parser(metar).location()
+        assert expected_val == actual
 
 
 

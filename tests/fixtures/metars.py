@@ -14,13 +14,14 @@ def visibility_metar():
 
 @pytest.fixture
 def multiple_cloud_layer_metar():
-    return "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233",
+    return "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233"
 
 @pytest.fixture
 def automated_metar():
     return "KP60 211356Z AUTO 00000KT M05/M06 A3057 RMK AO1 SLP375 T10501056"
 
 @pytest.fixture
-def all_metars():
+def all_metars(automated_metar, multiple_cloud_layer_metar, visibility_metar,
+    variable_wind_metar, normal_metar):
     return [normal_metar, variable_wind_metar, visibility_metar,
         multiple_cloud_layer_metar, automated_metar]

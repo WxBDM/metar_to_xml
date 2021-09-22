@@ -20,11 +20,11 @@ def test_correct_wind_dir_bounds():
 
     """Tests the whole value bounds to ensure it kicks back the right direction"""
 
-    bounds = [('N', 348, 11), ('NNE', 11, 33), ('NE', 33, 56),
-    ('ENE', 56, 78), ('E', 78, 101), ('ESE', 101, 123), ('SE', 123, 146),
-    ('SSE', 146, 168), ('S', 168, 191), ('SSW', 191, 213), ('SW', 213, 236),
-    ('WSW', 236, 258), ('W', 258, 281), ('WNW', 281, 303), ('NW', 303, 326),
-    ('NNW', 326, 348)]
+    bounds = [('N', 349, 11), ('NNE', 12, 33), ('NE', 34, 56),
+    ('ENE', 57, 78), ('E', 79, 101), ('ESE', 102, 123), ('SE', 124, 146),
+    ('SSE', 147, 168), ('S', 169, 191), ('SSW', 192, 213), ('SW', 214, 236),
+    ('WSW', 237, 258), ('W', 259, 281), ('WNW', 282, 303), ('NW', 304, 326),
+    ('NNW', 327, 348)]
 
 
     for direction, lower, upper in bounds:

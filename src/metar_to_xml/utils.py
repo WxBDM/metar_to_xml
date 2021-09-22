@@ -16,4 +16,56 @@
 # NNW 326.25 - 348.75
 
 def get_wind_direction_from_degrees(degrees):
-    pass
+
+    if not isinstance(degrees, int) and not isinstance(degrees, float):
+        raise ValueError("Parameter must be integer or float.")
+    if isinstance(degrees, float):
+        degrees = int(degrees)
+
+    if degrees <= 11 or degrees > 348:
+        return "N"
+
+    if 11 < degrees <= 33:
+        return "NNE"
+
+    if 33 < degrees <= 56:
+        return "NE"
+
+    if 56 < degrees <= 78:
+        return "ENE"
+
+    if 78 < degrees <= 101:
+        return "E"
+
+    if 101 < degrees <= 123:
+        return "ESE"
+
+    if 123 < degrees <= 146:
+        return "SE"
+
+    if 146 < degrees <= 168:
+        return "SSE"
+
+    if 168 < degrees <= 191:
+        return "S"
+
+    if 191 < degrees <= 213:
+        return "SSW"
+
+    if 213 < degrees <= 236:
+        return "SW"
+
+    if 236 < degrees <= 258:
+        return "WSW"
+
+    if 258 < degrees <= 281:
+        return "W"
+
+    if 281 < degrees <= 303:
+        return "WNW"
+
+    if 303 < degrees <= 326:
+        return "NW"
+
+    if 326 < degrees <= 348:
+        return "NNW"

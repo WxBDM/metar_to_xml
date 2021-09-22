@@ -26,7 +26,12 @@ class Parser:
     NOTE: this does not handle XML construction. Output examples should be structured
     exaclty as such so that parsing for XML construction is made easier."""
 
-    def __init__(self, metar, is_testing = False, testing_value = None):
+    def __init__(self, metar = None, test_val = None):
+
+        if all([metar is None, test_val is None]):
+            msg = "Be sure to put in either a testing value or a metar."
+            raise ValueError(msg)
+
         if not is_testing:
             self._metar = metar
         else:
@@ -39,8 +44,8 @@ class Parser:
 
     def location(self):
         """Returns the location of the METAR"""
-        pattern = re.compile("^[KA-Z]{4}")
-        match = pattern.match(self._metar)
+        pattern = re.compile("^[KA-Z0-9]{4}")
+        match = pattern.findall(self._metar)
         return match[0]
 
     def date(self):
@@ -49,9 +54,6 @@ class Parser:
         # 142059Z = [14, 2059, Z]
         pattern = re.compile("(\d{6}[Z])")
         match = pattern.findall(self._metar)[0]
-
-
-
 
     def wind(self):
         # input: 01015KT
@@ -107,9 +109,9 @@ if __name__ == "__main__":
     metars = ["KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206",
     "KGNV 141953Z VRB03KT 10SM SCT040 32/24 A3001 RMK AO2 LTG DSNT NE-S SLPNO T03220239 $",
     "KNID 141722Z VRB03KT 2 1/2SM HZ SCT000 27/M01 A2998 RMK AO2 SFC VIS 3 T02671011 $",
-    "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233"
-    ]
+    "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233",
+    "KP60 211356Z AUTO 00000KT M05/M06 A3057 RMK AO1 SLP375 T10501056"]
 
     for metar in metars:
         parser = Parser(metar)
-        parser.wind()
+        parser.location()
