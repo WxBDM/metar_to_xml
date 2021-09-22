@@ -1,16 +1,114 @@
 import pytest
 import sys
 sys.path.insert(0, '/Users/bdmolyne/Documents/metar_to_xml/src')
-from metar_to_xml.parser import Parser
+from metar_to_xml.parser import Parser, ParsedObject
 
-@pytest.mark.usefixtures("all_metars")
-def test_metar(all_metars):
-    expected = ["KIAH", 'KGNV', 'KNID', 'KTPA', 'KP60']
-    for metar, expected_val in zip(all_metars, expected):
-        actual = Parser(metar).location()
-        assert expected_val == actual
+class TestWithMetarValid:
 
+    @pytest.mark.usefixtures("all_metars")
+    def test_location(self, all_metars):
+        """Tests valid locations found in metars."""
+        expected = ["KIAH", 'KGNV', 'KNID', 'KTPA', 'KP60']
+        for metar, expected_val in zip(all_metars, expected):
+            actual = Parser(metar).location()
+            assert expected_val == actual
 
+    @pytest.mark.usefixtures("automated_metar", "normal_metar")
+    def test_automated(self, automated_metar, normal_metar):
+        """Tests if the metar is auto or not. Valid cases."""
+        # Tests an actual metar to see if it's AUTO
+        actual = Parser(automated_metar).is_auto()
+        assert actual is True
+
+        # not an AUTO metar.
+        actual = parser.Parser(normal_metar).is_auto()
+        assert actual is False
+
+    @pytest.mark.usefixtures("variable_wind_metar", "normal_metar")
+    def test_variable_wind(self, variable_wind_metar, normal_metar):
+        """Tests a normal and variable wind metar for inclusion of variable wind."""
+
+        actual = Parser(variable_wind_metar).wind()
+        assert actual == ['VRB', 'VRB', 0, 0]
+
+        actual = Parser(normal_metar).wind()
+        assert actual == [N, 10, 15, 0]
+
+    @pytest.mark.usefixtures("normal_metar")
+    def test_date_format(self, normal_metar):
+        """Tests to ensure time is formatted correctly"""
+
+        actual = Parser(normal_metar).date()
+
+        # test data structure regardless of what kind of metar is being tested
+        assert isinstance(actual, list) # expected list
+        assert len(actual) == 3 # number of items should be 3.
+
+        # test the data types.
+        # Date - dtype and length.
+        assert isinstance(actual[0], str)
+        assert len(actual[0]) == 2
+
+        # Time - dtype and length
+        assert isinstance(actual[1], str)
+        assert len(actual[1]) == 4
+
+        # Unit - dtype and length
+        assert isinstance(actual[2], str)
+        assert len(actual[2]) == 1
+
+        # Now check to ensure that the normal metar is expected.
+        assert actual == ['14', '1953', 'Z']
+
+class TestParserObject:
+
+    def test_has_attributes(self):
+        """Determines if the Parser object has needed attributes. Don't care about values"""
+
+        parsedObject = ParsedObject()
+
+        assert hasattr(ParsedObject, location)
+        assert hasattr(ParsedObject, date)
+        assert hasattr(ParsedObject, is_auto)
+        assert hasattr(ParsedObject, wind)
+        assert hasattr(ParsedObject, visibility)
+        assert hasattr(ParsedObject, wxconditions)
+        assert hasattr(ParsedObject, cloudcoverage)
+        assert hasattr(ParsedObject, temperature)
+        assert hasattr(ParsedObject, dewpoint)
+        assert hasattr(ParsedObject, altimeter)
+        assert hasattr(ParsedObject, remarks)
+
+    def test_attributes_set_to_none_to_start(self):
+
+        parsedObject = ParsedObject()
+
+        assert parsedObject.location is None
+        assert parsedObject.date is None
+        assert parsedObject.is_auto is None
+        assert parsedObject.wind is None
+        assert parsedObject.visibility is None
+        assert parsedObject.wxconditions is None
+        assert parsedObject.cloudcoverage is None
+        assert parsedObject.temperature is None
+        assert parsedObject.dewpoint is None
+        assert parsedObject.altimeter is None
+        assert parsedObject.remarks is None
+
+class TestRegexLogic:
+
+    def test_location_val_is_none(self):
+        parser = Parser("AAAAAAA")
+        parser.location()
+        parsed_metar = parser.get_parsedObject()
+        assert parsed_metar.location is None
+
+    def test_location_val_is_valid(self):
+        expected = "KHOU ABCD K543"
+        parser = Parser(expected)
+        parser.location()
+        parsed_metar = parser.get_parsedObject()
+        assert parsed_metar.location == 'KHOU'
 
 
 # class Parser:

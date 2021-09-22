@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
-              sh "source mtx/bin/activate"
+              sh "source mtx/bin/activate && python3 -m pip freeze"
             }
         }
         stage("Unittest") {

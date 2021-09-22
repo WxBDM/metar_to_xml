@@ -1,2 +1,2 @@
 import pytest
-from fixtures.metars import *
+from tests.fixtures.metars import *

@@ -1,23 +1,21 @@
-# parser for the metar.
-
 import re
+from dataclasses import dataclass
 
-# N 348.75 - 11.25
-# NNE 11.25 - 33.75
-# NE 33.75 - 56.25
-# ENE 56.25 - 78.75
-# E 78.75 - 101.25
-# ESE 101.25 - 123.75
-# SE 123.75 - 146.25
-# SSE 146.25 - 168.75
-# S 168.75 - 191.25
-# SSW 191.25 - 213.75
-# SW 213.75 - 236.25
-# WSW 236.25 - 258.75
-# W 258.75 - 281.25
-# WNW 281.25 - 303.75
-# NW 303.75 - 326.25
-# NNW 326.25 - 348.75
+@dataclass
+class ParsedObject:
+    """An object that the XML constructor is going to pull information from"""
+
+    location = None
+    date = None
+    is_auto = None
+    wind = None
+    visibility = None
+    wxconditions = None
+    cloudcoverage = None
+    temperature = None
+    dewpoint = None
+    altimeter = None
+    remarks = None
 
 class Parser:
 
@@ -32,21 +30,25 @@ class Parser:
             msg = "Be sure to put in either a testing value or a metar."
             raise ValueError(msg)
 
-        if not is_testing:
+        if test_val is None:
             self._metar = metar
         else:
-            if testing_value is None:
-                msg = "testing_value cannot be None. Initialize the class with" \
-                    " is_testing = True, testing_value to be a value to test."
-                raise ValueError(msg)
-
             self._metar = testing_value
+
+        # This is how we're going to get the values.
+        self._parsedObject = ParsedObject()
+
+    def get_parsedObject(self):
+        return self._parsedObject
 
     def location(self):
         """Returns the location of the METAR"""
+
         pattern = re.compile("^[KA-Z0-9]{4}")
         match = pattern.findall(self._metar)
-        return match[0]
+
+        # Store in parsed object.
+        self._parsedObject.location = match[0]
 
     def date(self):
         """Returns a string representation of the date"""
@@ -54,6 +56,14 @@ class Parser:
         # 142059Z = [14, 2059, Z]
         pattern = re.compile("(\d{6}[Z])")
         match = pattern.findall(self._metar)[0]
+        return match
+
+    def is_auto(self):
+        """Returns a boolean if the station is AUTO"""
+        pattern = re.compile("AUTO")
+        match = pattern.findall(self._metar)[0]
+        print(match)
+        return match
 
     def wind(self):
         # input: 01015KT
@@ -73,8 +83,6 @@ class Parser:
             if match is not None:
                 time = match[0]
                 break
-
-        # format the time
 
 
     def visibility(self):
@@ -115,3 +123,4 @@ if __name__ == "__main__":
     for metar in metars:
         parser = Parser(metar)
         parser.location()
+        print(parser.parsedObject.location)
