@@ -11,6 +11,8 @@
     <units>Z</units>
   </time>
 
+  <automated>False</automated>
+
   <wind>
     <direction>
       <cartesian>N</cartesian>

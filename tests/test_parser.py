@@ -10,39 +10,48 @@ class TestWithMetarValid:
         """Tests valid locations found in metars."""
         expected = ["KIAH", 'KGNV', 'KNID', 'KTPA', 'KP60']
         for metar, expected_val in zip(all_metars, expected):
-            actual = Parser(metar).location()
-            actual = actual.get_parsedObject().location
-            assert expected_val == actual
+            parser = Parser(metar)
+            parser.location()
+            actual = parser.get_parsedObject()
+            assert expected_val == actual.location
 
     @pytest.mark.usefixtures("automated_metar", "normal_metar")
     def test_automated(self, automated_metar, normal_metar):
         """Tests if the metar is auto or not. Valid cases."""
         # Tests an actual metar to see if it's AUTO
-        actual = Parser(automated_metar).is_auto()
-        assert actual is True
+        parser = Parser(automated_metar)
+        parser.is_auto()
+        actual = parser.get_parsedObject()
+        assert actual.is_auto is True
 
         # not an AUTO metar.
-        actual = parser.Parser(normal_metar).is_auto()
-        assert actual is False
+        parser = parser.Parser(normal_metar)
+        parser.is_auto()
+        actual = parser.get_parsedObject()
+        assert actual.is_auto is False
 
     @pytest.mark.usefixtures("variable_wind_metar")
     def test_variable_wind(self, variable_wind_metar):
         """Tests a normal and variable wind metar for inclusion of variable wind."""
 
-        actual = Parser(variable_wind_metar).wind()
-        actual = actual.get_parsedObject().wind
-        assert actual == ['VRB', 'VRB', 0, 0]
+        parser = Parser(variable_wind_metar)
+        parser.wind()
+        actual = parser.get_parsedObject()
+        assert actual.wind == ['VRB', 'VRB', 0, 0]
 
-        actual = Parser(normal_metar).wind()
-        actual = actual.get_parsedObject().wind
-        assert actual == ['N', '10', '15', '0']
+        parser = Parser(normal_metar)
+        parser.wind()
+        actual = parser.get_parsedObject()
+        assert actual.wind == ['N', '10', '15', '0']
 
     @pytest.mark.usefixtures("normal_metar")
     def test_date_format_dstructure_is_expected_len(self, normal_metar):
         """Tests to ensure time is formatted correctly"""
 
-        actual = Parser(normal_metar).date()
-        actual = actual.get_parsedObject().date
+        parser = Parser(normal_metar)
+        parser.date()
+        actual = parser.get_parsedObject()
+        actual = actual.date
 
         # test data structure regardless of what kind of metar is being tested
         assert isinstance(actual, list) # expected list
@@ -51,8 +60,10 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures("normal_metar")
     def test_date_format_dstructure_is_expected_len(self, normal_metar):
 
-        actual = Parser(normal_metar).date()
-        actual = actual.get_parsedObject().date
+        parser = Parser(normal_metar)
+        parser.date()
+        actual = parser.get_parsedObject()
+        actual = actual.date
 
         # test the data types.
         # Date - dtype and length.
@@ -73,8 +84,10 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures("normal_metar")
     def test_wind_format_is_expected_length(self, normal_metar):
 
-            actual = Parser(normal_metar).wind()
-            actual = actual.get_parsedObject().wind
+            parser = Parser(normal_metar)
+            parser.wind()
+            actual = parser.get_parsedObject()
+            actual = actual.wind
 
             # test data structure
             assert isinstance(actual, list) # expected list
@@ -83,8 +96,10 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures("normal_metar")
     def test_wind_format_is_expected_dtypes(self, normal_metar):
 
-            actual = Parser(normal_metar).wind()
-            actual = actual.get_parsedObject().wind
+            parser = Parser(normal_metar)
+            parser.wind()
+            actual = parser.get_parsedObject()
+            actual = actual.wind
 
             # test the data types.
             # Direction - dtype and length.
@@ -106,32 +121,40 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures("normal_metar")
     def test_visibility_normal_10sm_normal(self, normal_metar):
 
-        actual = Parser(normal_metar).visiblity()
-        actual = actual.get_parsedObject().visibility
+        parser = Parser(normal_metar)
+        parser.visibility()
+        actual = parser.get_parsedObject()
+        actual = actual.visibility
 
         assert actual == '10'
 
     @pytest.mark.usefixtures("visibility_metar")
     def test_visibility_fractional_metar(self, visibility_metar):
 
-        actual = Parser(visibility_metar).visibility()
-        actual = actual.get_parsedObject().visibility
+        parser = Parser(visibility_metar)
+        parser.visibility()
+        actual = parser.get_parsedObject()
+        actual = actual.visibility
 
         assert actual == "2.5"
 
     @pytest.mark.usefixtures('normal_metar')
     def test_wx_conditions_none(self, normal_metar):
 
-        actual = Parser(visibility_metar).wxconditions()
-        actual = actual.get_parsedObject().wxconditions
+        parser = Parser(normal_metar)
+        parser.wxconditions()
+        actual = parser.get_parsedObject()
+        actual = actual.wxconditions
 
         assert actual is None
 
     @pytest.mark.usefixtures('visibility_metar')
     def test_wx_conditions_haze(self, visibility_metar):
 
-        actual = Parser(visibility_metar).wxconditions()
-        actual = actual.get_parsedObject().wxconditions
+        parser = Parser(visibility_metar)
+        parser.wxconditions()
+        actual = parser.get_parsedObject()
+        actual = actual.wxconditions
 
         assert isinstance(actual[0], str)
         assert actual == ['HZ']
@@ -139,8 +162,10 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures('multiple_wx_conditions_metar')
     def test_wx_conditions_multiple(self, multiple_wx_conditions_metar):
 
-        actual = Parser(visibility_metar).wxconditions()
-        actual = actual.get_parsedObject().wxconditions
+        parser = Parser(multiple_wx_conditions_metar)
+        parser.wxconditions()
+        actual = parser.get_parsedObject()
+        actual = actual.wxconditions
 
         for val in actual:
             assert isinstance(val, str)
@@ -150,8 +175,10 @@ class TestWithMetarValid:
     @pytest.mark.usefixtures('wx_conditions_vicinity')
     def test_wxconditions_vicinity(self, wx_conditions_vicinity):
 
-        actual = Parser(visibility_metar).wxconditions()
-        actual = actual.get_parsedObject().wxconditions
+        parser = Parser(wx_conditions_vicinity)
+        parser.wxconditions()
+        actual = parser.get_parsedObject()
+        actual = actual.wxconditions
 
         assert isinstance(actual[0], str)
         assert actual == ['VCTS']
@@ -160,10 +187,12 @@ class TestWithMetarValid:
 # ==== TESTS FOR NICHE CASES ====
 
     @pytest.mark.usefixtures("runway_visual_range_metar")
-    def test_rvr_metar(self, runway_visual_range_metar):
+    def test_valid_rvr_metar(self, runway_visual_range_metar):
 
-        actual = Parser(runway_visual_range_metar).visibility()
-        actual = actual.get_parsedObject().visibility
+        parser = Parser(runway_visual_range_metar)
+        parser.runway_visual_range()
+        actual = parser.get_parsedObject()
+        actual = actual.runway_visual_range
 
         # ['Runway #', 'distance 1', 'distance 2']
 
@@ -175,6 +204,15 @@ class TestWithMetarValid:
         for val in actual:
             assert isinstance(val, str)
 
+    @pyteest.mark.usefixtures("normal_metar")
+    def test_invalid_rvr_metar(self, normal_metar):
+
+        parser = Parser(normal_metar)
+        parser.runway_visual_range()
+        actual = parser.get_parsedObject()
+        actual = actual.runway_visual_range
+
+        assert actual is None
 
 
 class TestParserObject:

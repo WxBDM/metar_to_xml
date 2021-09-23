@@ -5,7 +5,7 @@ pipeline {
         any { image 'python:3' }
     }
     stages {
-        stage('Build') {
+        stage('Install Packages') {
             steps {
               sh "source mtx/bin/activate && python3 -m pip install -r requirements.txt"
             }

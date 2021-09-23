@@ -12,6 +12,8 @@
     <units>Z</units>
   </time>
 
+  <automated>False</automated>
+
   <wind>
     <direction>
       <cartesian>SSE</cartesian>
@@ -41,7 +43,7 @@
   <!-- Todo: update this to be a bit more explicit. For now, keep as one string as shown on METAR -->
   <!-- i.e. -RA BR, VCTS, etc. -->
   <wxconditions>VCTS</wxconditions>
-  
+
   <cloudcoverage>
     <layer>
       <coverage>FEW</coverage>
