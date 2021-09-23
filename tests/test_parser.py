@@ -25,7 +25,7 @@ class TestWithMetarValid:
         assert actual.is_auto is True
 
         # not an AUTO metar.
-        parser = parser.Parser(normal_metar)
+        parser = Parser(normal_metar)
         parser.is_auto()
         actual = parser.get_parsedObject()
         assert actual.is_auto is False
@@ -269,12 +269,14 @@ class TestRegexLogic:
     def test_location_val_is_none(self):
         parser = Parser("AAAAAAA")
         parser.location()
-        parsed_metar = parser.get_parsedObject()
-        assert parsed_metar.location is None
+        actual = parser.get_parsedObject()
+
+        assert actual.location is None
 
     def test_location_val_is_valid(self):
         expected = "KHOU ABCD K543"
         parser = Parser(expected)
         parser.location()
-        parsed_metar = parser.get_parsedObject()
+        actual = parser.get_parsedObject()
+
         assert parsed_metar.location == 'KHOU'
