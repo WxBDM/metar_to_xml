@@ -12,12 +12,12 @@ pipeline {
         }
         stage("Testing Utils") {
           steps {
-            sh "source mtx/bin/activate && pytest tests/test_utils"
+            sh "source mtx/bin/activate && pytest /tests/test_utils"
           }
         }
         stage("Testing Parser") {
           steps {
-            sh "source mtx/bin/activate && pytest tests/test_parser"
+            sh "source mtx/bin/activate && pytest /tests/test_parser"
           }
         }
     }
