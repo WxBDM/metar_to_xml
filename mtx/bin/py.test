@@ -1,10 +1,12 @@
-#!/Users/bdmolyne/Documents/metar_to_xml/mtx/bin/python3
-# -*- coding: utf-8 -*-
+#!/Users/bdmolyne/Documents/metar_to_xml/mtx/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'pytest==6.2.5','console_scripts','py.test'
+__requires__ = 'pytest==6.2.5'
 import re
 import sys
-
-from pytest import console_main
+from pkg_resources import load_entry_point
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(console_main())
+    sys.exit(
+        load_entry_point('pytest==6.2.5', 'console_scripts', 'py.test')()
+    )

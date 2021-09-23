@@ -16,6 +16,7 @@ class ParsedObject:
     dewpoint = None
     altimeter = None
     remarks = None
+    runway_visual_range = None
 
 class Parser:
 
