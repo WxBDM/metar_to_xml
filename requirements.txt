@@ -1,4 +1,5 @@
 attrs==21.2.0
+hypothesis==6.21.6
 iniconfig==1.1.1
 numpy==1.21.2
 packaging==21.0
@@ -10,5 +11,6 @@ pytest==6.2.5
 python-dateutil==2.8.2
 pytz==2021.1
 six==1.16.0
+sortedcontainers==2.4.0
 toml==0.10.2
 xmlrunner==1.7.7
