@@ -204,7 +204,7 @@ class TestWithMetarValid:
         for val in actual:
             assert isinstance(val, str)
 
-    @pyteest.mark.usefixtures("normal_metar")
+    @pytest.mark.usefixtures("normal_metar")
     def test_invalid_rvr_metar(self, normal_metar):
 
         parser = Parser(normal_metar)
