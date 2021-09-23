@@ -1,0 +1,84 @@
+<!-- EXAMPLE FOR THE FOLLOWING METAR -->
+<!-- KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 -->
+<!-- RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233 -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <location>KTPA</location>
+
+  <time>
+    <day>11</day>
+    <time>0353</time>
+    <units>Z</units>
+  </time>
+
+  <wind>
+    <direction>
+      <cartesian>SSE</cartesian>
+      <angle>150</angle>
+      <units>degrees</units>
+    </direction>
+    <speed>
+      <value>6</value>
+      <units>KT</units>
+    </speed>
+    <gust>
+      <value>0</value>
+      <units>KT</value>
+    </gust>
+  </wind>
+
+  <visibility>
+    <value>10</value>
+    <units>SM</units>
+    <rvr>
+      <runway>None</runway>
+      <distance1>None</distance1>
+      <distance2>None</distance2>
+    </rvr>
+  </visibility>
+
+  <!-- Todo: update this to be a bit more explicit. For now, keep as one string as shown on METAR -->
+  <!-- i.e. -RA BR, VCTS, etc. -->
+  <wxconditions>VCTS</wxconditions>
+  
+  <cloudcoverage>
+    <layer>
+      <coverage>FEW</coverage>
+      <height>2000</height>
+      <units>FT</height>
+    </layer>
+    <layer>
+      <coverage>FEW</coverage>
+      <height>3800</height>
+      <units>FT</height>
+    </layer>
+    <layer>
+      <coverage>SCT</coverage>
+      <height>11000</height>
+      <units>FT</height>
+    </layer>
+    <layer>
+      <coverage>BKN</coverage>
+      <height>16000</height>
+      <units>FT</height>
+    </layer>
+  </cloudcoverage>
+
+  <temperature>
+    <value>27</value>
+    <units>C</units>
+  </temperature>
+
+  <dewpoint>
+    <value>23</value>
+    <units>C</units>
+  </dewpoint>
+
+  <altimeter>
+    <value>30.07</value>
+    <units>In. Hg</units>
+  </altimeter>
+
+  <remarks>AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233</remarks>
+</data>
