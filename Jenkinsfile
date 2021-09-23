@@ -13,12 +13,12 @@ pipeline {
         }
         stage("Testing Utils") {
           steps {
-            sh "source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_utils.py"
+            sh "source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_utils.py --verbose"
           }
         }
         stage("Testing Parser") {
           steps {
-            sh "source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_parser.py"
+            sh "source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_parser.py --verbose"
           }
         }
     }
