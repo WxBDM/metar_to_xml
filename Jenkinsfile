@@ -9,6 +9,7 @@ pipeline {
             steps {
               sh "source mtx/bin/activate && python ${env.WORKSPACE}/tests/pytest-dependency-0.5.1/setup.py install && rm -r ${env.WORKSPACE}/tests/pytest-dependency-0.5.1"
               sh "source mtx/bin/activate && python3 -m pip install -r requirements.txt"
+              sh "source mtx/bin/activate && python3 -m pip freeze"
             }
         }
         stage("Testing Utils") {
