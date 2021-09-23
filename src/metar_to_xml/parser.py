@@ -61,9 +61,12 @@ class Parser:
     def is_auto(self):
         """Returns a boolean if the station is AUTO"""
         pattern = re.compile("AUTO")
-        match = pattern.findall(self._metar)[0]
-        print(match)
-        return match
+        match = pattern.findall(self._metar)
+
+        if match is None:
+            self._parsedObject.is_auto = False
+        else:
+            self._parsedObject.is_auto = True
 
     def wind(self):
         # input: 01015KT
@@ -91,6 +94,10 @@ class Parser:
 
         # 2 1/2SM
         # Output: 2.5 SM
+        pass
+
+    def runway_visual_range(self):
+        """If a RVR exists in a METAR, return values from it."""
         pass
 
     def wxconditions(self):
