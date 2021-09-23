@@ -1,5 +1,4 @@
 attrs==21.2.0
-hypothesis==6.21.6
 iniconfig==1.1.1
 numpy==1.21.2
 packaging==21.0
