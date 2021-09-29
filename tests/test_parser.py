@@ -93,14 +93,14 @@ class TestParsingLogic:
         actual = parser.get_parsedObject()
         assert actual.is_auto is False
 
-    @pytest.mark.usefixtures("variable_wind_metar")
-    def test_variable_wind(self, variable_wind_metar):
+    @pytest.mark.usefixtures("variable_wind_metar", "normal_metar")
+    def test_variable_wind(self, variable_wind_metar, normal_metar):
         """Tests a normal and variable wind metar for inclusion of variable wind."""
 
         parser = Parser(variable_wind_metar)
         parser.wind()
         actual = parser.get_parsedObject()
-        assert actual.wind == ['VRB', 'VRB', 0, 0]
+        assert actual.wind == ['VRB', 'VRB', '3', '0']
 
         parser = Parser(normal_metar)
         parser.wind()
@@ -199,7 +199,7 @@ class TestParsingLogic:
         actual = parser.get_parsedObject()
         actual = actual.visibility
 
-        assert actual == "2.5"
+        assert actual == "2 1/2"
 
     @pytest.mark.usefixtures('normal_metar')
     def test_wx_conditions_none(self, normal_metar):
