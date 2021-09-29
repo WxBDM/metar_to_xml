@@ -264,7 +264,7 @@ class TestNicheParsingCases:
 
         # test data types
         for val in actual:
-            assert isinstance(val, str)
+            assert isinstance(val, (type(None), str))
 
     @pytest.mark.usefixtures("normal_metar")
     def test_invalid_rvr_metar(self, normal_metar):
@@ -274,4 +274,4 @@ class TestNicheParsingCases:
         actual = parser.get_parsedObject()
         actual = actual.runway_visual_range
 
-        assert actual is None
+        assert actual == [None, None, None]

@@ -43,9 +43,17 @@ class Parser:
         # This is how we're going to get the values.
         self._parsedObject = ParsedObject()
 
-    def _compile_and_find(self, regex):
+    def _compile_and_find(self, regex, other = None):
+
         pattern = re.compile(regex)
-        return pattern.findall(self._metar)
+        if other is None:
+            return pattern.findall(self._metar)
+        else:
+            # dtype checking
+            if not isinstance(other, str):
+                raise ValueError(f"`other` must be string. Found: {type(other)}")
+
+            return pattern.findall(other)
 
     def get_parsedObject(self):
         return self._parsedObject
@@ -69,7 +77,6 @@ class Parser:
     def is_auto(self):
         """Returns a boolean if the station is AUTO"""
         match = self._compile_and_find("AUTO")
-        print(match)
 
         if len(match) != 0: #e.g. ['AUTO']
             self._parsedObject.is_auto = True
@@ -129,26 +136,93 @@ class Parser:
     def runway_visual_range(self):
         """If a RVR exists in a METAR, return values from it."""
 
+        # Examples:
+        #   R01L/0800FT => Runway 01L, 800 FT
+        #   R01L/0600V1000FT => Runway 01L, 600 - 1000 FT
+        #   R01L/M0600FT => Runway 01L, < 600 FT
+        #   R27/P6000FT => Runway 01L, > 6000 FT
+        # rvr = [runway #, Visual (str), I/D/N/None]
+        #   Note: last element will likely be None.
+
+        self._parsedObject.runway_visual_range = [None, None, None]
         regex = "R[0-9LRC]{2,}\/[0-9MVP]{4,}FT(\/[UDN])?"
-        match = self._compile_and_find(value)
+        match = re.search(fr"{regex}", self._metar)
+        if match is not None:
+            match = match.group() # Gives a string (R23/5000VP6000FT)
+
+            match = match.split("/")
+            # runway value
+            self._parsedObject.runway_visual_range[0] = match[0][1:]
+
+            # Parsing visual value(s)
+            regex = "[MP]?[0-9]{4}"
+            pattern = re.compile(regex)
+            matches = pattern.findall(match[1])
+            print(matches)
+
+            # Something like 0800FT, M0600FT, or P6000FT
+            if len(matches) == 1:
+                match_temp = matches[0] # extract it, parse appropriately.
+                if "M" in match_temp:
+                    string_val = f"< {match_temp[1:-2]}"
+                    self._parsedObject.runway_visual_range[1] = string_val
+                elif "P" in match_temp:
+                    string_val = f"> {match_temp[1:-2]}"
+                    self._parsedObject.runway_visual_range[1] = string_val
+                else:
+                    self._parsedObject.runway_visual_range[1] = match_temp[1:-2]
+
+            # Something like 5000VP6000FT
+            if len(matches) == 2:
+                string_val = f"{matches[0]} - {matches[1]}"
+                self._parsedObject.runway_visual_range[1] = string_val
 
     def wxconditions(self):
         pass
 
     def cloudcoverage(self):
-        pass
+        self._parsedObject.wxconditions = [None, None, None, None]
+        regex = 'CLR|FEW[0-9]{3}|SCT[0-9]{3}|BKN[0-9]{3}|OVC[0-9]{3}'
+        match = self._compile_and_find(regex)
 
-    def temperature(self):
-        pass
+        if len(match) == 0: # it is possible to have no obs
+            return 0 # dummy return, don't do anything with it.
 
-    def dewpoint(self):
-        pass
+        wx_cond_d = {'CLR' : 'Clear', 'FEW' : 'Few', 'SCT' : 'Scattered',
+                    'BKN' : 'Broken', 'OVC' : 'Overcast'}
+
+        for index, element in enumerate(match):
+            if 'CLR' in element:
+                self._parsedObject.wxconditions[index] = 'Clear'
+            else:
+                height = str(int(element[3:]) * 100)
+                wx_cond = wx_cond_d[element[:3]]
+
+                self._parsedObject.wxconditions[index] = (wx_cond, height)
+
+    def t_td(self):
+        pattern = 'M?[0-9]{2}\/M?[0-9]{2}'
+        match = re.search(fr"{pattern}", self._metar).group()
+        split = match.split("/")
+
+        for index, val in enumerate(split):
+            if 'M' in val:
+                val = "-" + str(int(val[1:]))
+            if index == 0:
+                self._parsedObject.temperature = val
+            else:
+                self._parsedObject.dewpoint = val
 
     def altimeter(self):
-        pass
+        pattern = 'A[0-9]{4}'
+        match = re.search(fr'{pattern}', self._metar).group()
+        altimeter = match[1:3] + '.' + match[3:]
+        self._parsedObject.altimeter = altimeter
 
     def remarks(self):
-        pass
+        pattern = 'RMK(.*)'
+        match = re.search(fr'{pattern}', self._metar).group()
+        self._parsedObject.remarks = match
 
 
 
@@ -162,6 +236,6 @@ if __name__ == "__main__":
 
     for metar in metars:
         parser = Parser(metar)
-        parser.wind()
+        parser.remarks()
         a = parser.get_parsedObject()
-        print(a.wind)
+        print(a.remarks)
