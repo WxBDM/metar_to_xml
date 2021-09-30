@@ -22,6 +22,11 @@ class ParsedObject:
     remarks = None
     runway_visual_range = None
 
+    d = {'location' : location, 'date' : date, 'is_auto' : is_auto,
+        'wind' : wind, 'visibility' : visibility, 'wxconditions' : wxconditions,
+        'cloudcoverage', cloudcoverage, 'temperature', temperature, 'dewpoint' : dewpoint,
+        'altimeter' : altimeter, 'remarks' : remarks}
+
 class Parser:
 
     """Parser for a given METAR.
@@ -71,7 +76,7 @@ class Parser:
         # Input/output are same
         # 142059Z = [14, 2059, Z]
         match = self._compile_and_find("([0-9]{6}[Z])")[0]
-        data = [match[:2], match[2:-1], 'Z']
+        data = [match[:2], match[2:-1]]
         self._parsedObject.date = data
 
     def is_auto(self):
@@ -224,18 +229,42 @@ class Parser:
         match = re.search(fr'{pattern}', self._metar).group()
         self._parsedObject.remarks = match
 
+    def parse(self):
+        self.location()
+        self.date()
+        self.is_auto()
+        self.wind()
+        self.visibility()
+        self.runway_visual_range()
+        self.wxconditions()
+        self.cloudcoverage()
+        self.t_td()
+        self.altimeter()
+        self.remarks()
+
 
 
 if __name__ == "__main__":
-    metars = ["KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206",
-    "KGNV 141953Z VRB03KT 10SM SCT040 32/24 A3001 RMK AO2 LTG DSNT NE-S SLPNO T03220239 $",
-    "KNID 141722Z VRB03KT 2 1/2SM HZ SCT000 27/M01 A2998 RMK AO2 SFC VIS 3 T02671011 $",
-    "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233",
-    "KP60 211356Z AUTO 00000KT M05/M06 A3057 RMK AO1 SLP375 T10501056",
-    "KMBS 231423Z 33021G30KT 1 1/4SM R23/5000VP6000FT -RA BR SCT006 OVC010 10/09 A2970 RMK AO2 PK WND 33030/1417 P0005 T01000089"]
+    # metars = ["KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206",
+    # "KGNV 141953Z VRB03KT 10SM SCT040 32/24 A3001 RMK AO2 LTG DSNT NE-S SLPNO T03220239 $",
+    # "KNID 141722Z VRB03KT 2 1/2SM HZ SCT000 27/M01 A2998 RMK AO2 SFC VIS 3 T02671011 $",
+    # "KTPA 110353Z 15006KT 10SM VCTS FEW020 FEW038 SCT110 BKN160 27/23 A3007 RMK AO2 LTG DSNT W AND NW SLP182 OCNL LTGIC DSNT NW CB DSNT NW T02670233",
+    # "KP60 211356Z AUTO 00000KT M05/M06 A3057 RMK AO1 SLP375 T10501056",
+    # "KMBS 231423Z 33021G30KT 1 1/4SM R23/5000VP6000FT -RA BR SCT006 OVC010 10/09 A2970 RMK AO2 PK WND 33030/1417 P0005 T01000089"]
 
-    for metar in metars:
-        parser = Parser(metar)
-        parser.remarks()
-        a = parser.get_parsedObject()
-        print(a.remarks)
+    metar = 'KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206'
+    parser = Parser(metar)
+    parser.parse()
+    a = parser.get_parsedObject()
+    print(a.location)
+    print(a.date)
+    print(a.is_auto)
+    print(a.wind)
+    print(a.visibility)
+    print(a.runway_visual_range)
+    print(a.wxconditions)
+    print(a.cloudcoverage)
+    print(a.temperature)
+    print(a.dewpoint)
+    print(a.altimeter)
+    print(a.remarks)
