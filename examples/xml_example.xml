@@ -3,84 +3,36 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
-  <location>KIAH</location>
-
-  <time>
-    <day>14</day>
-    <time>1953</time>
-    <units>Z</units>
-  </time>
-
-  <automated>False</automated>
+  <location value="KIAH"/>
+  <time day="14" time="1953" unit="Z">
+  <automated value="False">
 
   <wind>
-    <direction>
-      <cartesian>N</cartesian>
-      <angle>10</angle>
-      <units>degrees</units>
-    </direction>
-    <speed>
-      <value>15</value>
-      <units>KT</units>
-    </speed>
-    <gust>
-      <value>0</value>
-      <units>KT</value>
-    </gust>
+    <direction value="N" angle="10" unit="degrees"/>
+    <speed value="15" unit="KT"/>
+    <gust value="0" unit="KT"/>
   </wind>
 
-  <visibility>
-    <value>10</value>
-    <units>SM</units>
-    <rvr>
-      <runway>None</runway>
-      <distance1>None</distance1>
-      <distance2>None</distance2>
-      <trend>None</trend>
-    </rvr>
+  <visibility value="10" unit="SM"/>
+    <rvr number="None" shortDistance="None" longDistance="None" trend="None"/>
   </visibility>
 
   <!-- Todo: update this to be a bit more explicit. For now, keep as one string as shown on METAR -->
   <!-- i.e. -RA BR, VCTS, etc. -->
-  <wxconditions>None</wxconditions>
+  <wxconditions value="None"></wxconditions>
 
   <cloudcoverage>
-    <layer>
-      <coverage>OVC</coverage>
-      <height>1000</height>
-      <units>FT</height>
-    </layer>
-    <layer>
-      <coverage>None</coverage>
-      <height>None</height>
-      <units>FT</height>
-    </layer>
-    <layer>
-      <coverage>None</coverage>
-      <height>None</height>
-      <units>FT</height>
-    </layer>
-    <layer>
-      <coverage>None</coverage>
-      <height>None</height>
-      <units>FT</height>
-    </layer>
+    <layer coverage="Overcast" height="1000" unit="Feet"/>
+    <layer coverage="None" height="None" unit="Feet"/>
+    <layer coverage="None" height="None" unit="Feet"/>
+    <layer coverage="None" height="None" unit="Feet"/>
   </cloudcoverage>
 
-  <temperature>
-    <value>25</value>
-    <units>C</units>
-  </temperature>
+  <temperature value="25" unit="C">
 
-  <dewpoint>
-    <value>21</value>
-    <units>C</units>
-  </dewpoint>
+  <dewpoint value="21" unit="C">
 
-  <altimeter>
-    <value>29.72</value>
-    <units>In. Hg</units>
-  </altimeter>
+  <altimeter value="29.72" unit="In. Hg"/>
 
-  <remarks>AO2 SLP064 T02500206</remarks>
+  <remarks value="RMK AO2 SLP064 T02500206"/>
 </data>

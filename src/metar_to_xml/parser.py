@@ -24,7 +24,7 @@ class ParsedObject:
 
     d = {'location' : location, 'date' : date, 'is_auto' : is_auto,
         'wind' : wind, 'visibility' : visibility, 'wxconditions' : wxconditions,
-        'cloudcoverage', cloudcoverage, 'temperature', temperature, 'dewpoint' : dewpoint,
+        'cloudcoverage' : cloudcoverage, 'temperature' : temperature, 'dewpoint' : dewpoint,
         'altimeter' : altimeter, 'remarks' : remarks}
 
 class Parser:
