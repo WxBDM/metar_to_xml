@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>A JavaScript project</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../icon_tor.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="description" content="Project encapsulating training for Lynker">
+    <meta name="author" content="Brandon Molyneaux">
+
+  </head>
+
+  <body>
+    <div id="header">
+      <h1>METAR Parser</h1>
+    </div>
+
+    <div id="input">
+        <p>Input metar here:<br>
+        <input type='text' id='TextBox' name="input_field">
+        <input type="button" id="SubmitButton" value="Submit METAR" onclick="SubmitMetar()">
+    </div>
+
+    <div id="results">
+      <h3><u>Parsed METAR</u></h3>
+      <div id="display_metar">
+        <p>No METAR inputted.
+        <!-- This is where JS fills in the gap -->
+      </div>
+    </div>
+
+    <div id="description">
+      <h4> Description of Project </h4>
+      <p>This project was designed to encapsulate the technical training while
+        clearance was under way. This project included usage of Jenkins, Python,
+        and JavaScript.
+
+    </div>
+    <script type="text/javascript" src="main.js"></script>
+  </body>
+
+</html>
