@@ -9,10 +9,24 @@ metarParsed.onclick = function() {
 
   // Checking to ensure that there isn't anything there.
   if (!textFromTextBox) {
-    console.log("nothing is there!");
     string_to_show = "No METAR inputted."
   }
   else { // There is a valid metar that shows.
+
+    exec(`python3 ../../metar_to_xml/xml_maker.py ${textFromTextBox}`, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+    });
+
+    const { exec } = require("child_process");
+
     // construct the string.
     var string_to_show = `<p>METAR: ${textFromTextBox}<br>`
 
