@@ -14,15 +14,15 @@
   </wind>
 
   <visibility value="10" unit="SM"/>
-    <rvr number="None" shortDistance="None" longDistance="None" trend="None"/>
+    <rvr runway="None" shortDistance="None" longDistance="None" trend="None"/>
   </visibility>
 
   <!-- Todo: update this to be a bit more explicit. For now, keep as one string as shown on METAR -->
   <!-- i.e. -RA BR, VCTS, etc. -->
-  <wxconditions value="None"></wxconditions>
+  <wxconditions value="None"/>
 
   <cloudcoverage>
-    <layer coverage="Overcast" height="1000" unit="Feet"/>
+    <layer coverage="Overcast" height="1400" unit="Feet"/>
     <layer coverage="None" height="None" unit="Feet"/>
     <layer coverage="None" height="None" unit="Feet"/>
     <layer coverage="None" height="None" unit="Feet"/>

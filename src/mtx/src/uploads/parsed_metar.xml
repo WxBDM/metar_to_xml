@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<data>
+	<location value="KIAH"/>
+	<time day="14" time="1953" unit="Z"/>
+	<automated value="True"/>
+	<wind>
+		<direction value="N" angle="10" unit="degrees"/>
+		<speed value="15" unit="KT"/>
+		<gust value="0" unit="KT"/>
+	</wind>
+	<visibility value="10" unit="SM">
+		<rvr runway="None" distance="None" trend="None"/>
+	</visibility>
+	<wxconditions values="None"/>
+	<cloudcoverage>
+		<layer coverage="Overcast" height="1400" unit="Feet"/>
+		<layer coverage="None" height="None" unit="Feet"/>
+		<layer coverage="None" height="None" unit="Feet"/>
+		<layer coverage="None" height="None" unit="Feet"/>
+	</cloudcoverage>
+	<temperature value="25" unit="C"/>
+	<dewpoint value="21" unit="C"/>
+	<altimeter value="29.72" unit="In. Hg"/>
+	<remarks value="RMK AO2 SLP064 T02500206"/>
+</data>
+<!--Test XML parsed METAR.-->

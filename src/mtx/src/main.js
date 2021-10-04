@@ -12,21 +12,104 @@ metarParsed.onclick = function() {
     console.log("nothing is there!");
     string_to_show = "No METAR inputted."
   }
-  else {
-    var string_to_show = `
-      METAR: ${textFromTextBox}<br>
-      <table>
-        <tr>
-          <th>Item</th>
-          <th>Value</th>
-        </tr>
-        <tr>
-          <td>Input</td>
-          <td>${textFromTextBox}</td>
-        </tr>
-      </table>
-    `
+  else { // There is a valid metar that shows.
+    // construct the string.
+    var string_to_show = `<p>METAR: ${textFromTextBox}<br>`
+
+    // Call the constructTable function to create the table.
+    // Append it to the string to show on the web page.
+    var table = constructTable()
+    string_to_show += table
   }
 
   document.getElementById('display_metar').innerHTML = string_to_show;
+}
+
+class TableConstructor {
+  // A constructor for the table.
+  constructor(xmlDoc) {
+    this.doc = xmlDoc;
+    this.table = "<table><tr><th>Item</th><th>Value</th><tr>";
+
+    this.element_cache;
+    this.attribute_tag_cache;
+  }
+
+  addRow(column1, column2) {
+    // Adds a new row to the table.
+    this.table += `<tr id="parsedMetarRow">
+      <td id="itemName">${column1}</td>
+      <td id="itemValue">${column2}</td>
+    </tr>`
+  }
+
+  setTag(tag) {
+    // gets a tag from the doc.
+    this.element_cache = this.doc.getElementsByTagName(tag);
+    return this.element_cache;
+  }
+
+  getAttr(attr) {
+    // gets an attribute from a given tag.
+    this.attribute_tag_cache = this.element_cache[0].getAttribute(attr);
+    return this.attribute_tag_cache;
+  }
+
+  getFullTableString() {
+    // returns the entire table string.
+    this.table += "</table>"
+    return this.table
+  }
+}
+
+function tagName(tag) {
+  // To clean up the code a bit.
+  return xmlDoc.getElementsByTagName(tag);
+}
+
+function constructTable() {
+
+  var file = new XMLHttpRequest();
+  file.open("GET", "./uploads/parsed_metar.xml", false);
+  file.send(null);
+
+  // Create a new parser object to get xmlDoc text.
+  var parser = new DOMParser();
+  var xmlDoc = parser.parseFromString(file.responseText,"text/xml");
+
+  // Create a new table object. Cleans code up considerably, makes it easier to read.
+  let table = new TableConstructor(xmlDoc);
+
+  table.setTag("location");
+  table.addRow("Location", table.getAttr("value"));
+
+  table.setTag("time");
+  table.addRow("Day", table.getAttr("day"));
+  table.addRow("Time", table.getAttr("time") + " " + table.getAttr("unit"));
+
+  table.setTag("automated")
+  table.addRow("Automated", table.getAttr("value"));
+
+  // TODO: wind
+  // TODO: visibility
+
+  //always None until parser gets updated.
+  table.setTag("wxconditions")
+  table.addRow("Conditions", table.getAttr("values"));
+
+  // TODO: cloud coverage.
+
+  table.setTag("temperature")
+  table.addRow("Temperature", table.getAttr("value") + " " + table.getAttr("unit"));
+
+  table.setTag("dewpoint")
+  table.addRow("Dewpoint", table.getAttr("value") + " " + table.getAttr("unit"));
+
+  table.setTag("altimeter")
+  table.addRow("Altimeter", table.getAttr("value") + " " + table.getAttr("unit"));
+
+  table.setTag("remarks")
+  table.addRow("Remarks", table.getAttr("value"));
+
+  return table.getFullTableString();
 }

@@ -22,10 +22,13 @@ class ParsedObject:
     remarks = None
     runway_visual_range = None
 
-    d = {'location' : location, 'date' : date, 'is_auto' : is_auto,
-        'wind' : wind, 'visibility' : visibility, 'wxconditions' : wxconditions,
-        'cloudcoverage' : cloudcoverage, 'temperature' : temperature, 'dewpoint' : dewpoint,
-        'altimeter' : altimeter, 'remarks' : remarks}
+    def pack(self):
+        d = {'location' : self.location, 'date' : self.date, 'is_auto' : self.is_auto,
+            'wind' : self.wind, 'visibility' : self.visibility,
+            'runway_visual_range' : self.runway_visual_range, 'wxconditions' : self.wxconditions,
+            'cloudcoverage' : self.cloudcoverage, 'temperature' : self.temperature,
+            'dewpoint' : self.dewpoint, 'altimeter' : self.altimeter, 'remarks' : self.remarks}
+        return d
 
 class Parser:
 
@@ -64,7 +67,9 @@ class Parser:
         return self._parsedObject
 
     def location(self):
-        """Returns the location of the METAR"""
+        """Sets the location of the METAR.
+
+        Parsed Object Data Type: string"""
 
         match = self._compile_and_find("^[KA-Z0-9]{4}")
 
@@ -72,7 +77,9 @@ class Parser:
         self._parsedObject.location = match[0]
 
     def date(self):
-        """Returns a string representation of the date"""
+        """Sets the date of the METAR.
+
+        Parsed Object Data Type: List(string, string)"""
         # Input/output are same
         # 142059Z = [14, 2059, Z]
         match = self._compile_and_find("([0-9]{6}[Z])")[0]
@@ -84,9 +91,9 @@ class Parser:
         match = self._compile_and_find("AUTO")
 
         if len(match) != 0: #e.g. ['AUTO']
-            self._parsedObject.is_auto = True
+            self._parsedObject.is_auto = "True"
         else:
-            self._parsedObject.is_auto = False
+            self._parsedObject.is_auto = "True"
 
     def wind(self):
 
@@ -149,7 +156,7 @@ class Parser:
         # rvr = [runway #, Visual (str), I/D/N/None]
         #   Note: last element will likely be None.
 
-        self._parsedObject.runway_visual_range = [None, None, None]
+        self._parsedObject.runway_visual_range = ["None", "None", "None"]
         regex = "R[0-9LRC]{2,}\/[0-9MVP]{4,}FT(\/[UDN])?"
         match = re.search(fr"{regex}", self._metar)
         if match is not None:
@@ -186,14 +193,15 @@ class Parser:
         pass
 
     def cloudcoverage(self):
-        self._parsedObject.wxconditions = [None, None, None, None]
+        self._parsedObject.cloudcoverage = [("None", "None"), ("None", "None"),
+                                            ("None", "None"), ("None", "None")]
         regex = 'CLR|FEW[0-9]{3}|SCT[0-9]{3}|BKN[0-9]{3}|OVC[0-9]{3}'
         match = self._compile_and_find(regex)
 
         if len(match) == 0: # it is possible to have no obs
             return 0 # dummy return, don't do anything with it.
 
-        wx_cond_d = {'CLR' : 'Clear', 'FEW' : 'Few', 'SCT' : 'Scattered',
+        cloud_d = {'CLR' : 'Clear', 'FEW' : 'Few', 'SCT' : 'Scattered',
                     'BKN' : 'Broken', 'OVC' : 'Overcast'}
 
         for index, element in enumerate(match):
@@ -201,9 +209,9 @@ class Parser:
                 self._parsedObject.wxconditions[index] = 'Clear'
             else:
                 height = str(int(element[3:]) * 100)
-                wx_cond = wx_cond_d[element[:3]]
+                clouds = cloud_d[element[:3]]
 
-                self._parsedObject.wxconditions[index] = (wx_cond, height)
+                self._parsedObject.cloudcoverage[index] = (clouds, height)
 
     def t_td(self):
         pattern = 'M?[0-9]{2}\/M?[0-9]{2}'
@@ -241,7 +249,6 @@ class Parser:
         self.t_td()
         self.altimeter()
         self.remarks()
-
 
 
 if __name__ == "__main__":
