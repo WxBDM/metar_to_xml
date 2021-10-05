@@ -21,13 +21,15 @@ class ParsedObject:
     altimeter = None
     remarks = None
     runway_visual_range = None
+    metar = None
 
     def pack(self):
         d = {'location' : self.location, 'date' : self.date, 'is_auto' : self.is_auto,
             'wind' : self.wind, 'visibility' : self.visibility,
             'runway_visual_range' : self.runway_visual_range, 'wxconditions' : self.wxconditions,
             'cloudcoverage' : self.cloudcoverage, 'temperature' : self.temperature,
-            'dewpoint' : self.dewpoint, 'altimeter' : self.altimeter, 'remarks' : self.remarks}
+            'dewpoint' : self.dewpoint, 'altimeter' : self.altimeter, 'remarks' : self.remarks,
+            'metar' : self.metar}
         return d
 
 class Parser:
@@ -50,6 +52,7 @@ class Parser:
 
         # This is how we're going to get the values.
         self._parsedObject = ParsedObject()
+        self._parsedObject.metar = metar
 
     def _compile_and_find(self, regex, other = None):
 
@@ -93,7 +96,7 @@ class Parser:
         if len(match) != 0: #e.g. ['AUTO']
             self._parsedObject.is_auto = "True"
         else:
-            self._parsedObject.is_auto = "True"
+            self._parsedObject.is_auto = "False"
 
     def wind(self):
 
@@ -214,7 +217,7 @@ class Parser:
                 self._parsedObject.cloudcoverage[index] = (clouds, height)
 
     def t_td(self):
-        pattern = 'M?[0-9]{2}\/M?[0-9]{2}'
+        pattern = '\sM?[0-9]{2}\/M?[0-9]{2}\s'
         match = re.search(fr"{pattern}", self._metar).group()
         split = match.split("/")
 
@@ -222,9 +225,9 @@ class Parser:
             if 'M' in val:
                 val = "-" + str(int(val[1:]))
             if index == 0:
-                self._parsedObject.temperature = val
+                self._parsedObject.temperature = str(int(val))
             else:
-                self._parsedObject.dewpoint = val
+                self._parsedObject.dewpoint = str(int(val))
 
     def altimeter(self):
         pattern = 'A[0-9]{4}'

@@ -16,12 +16,15 @@ class XMLMaker:
         self.data = self.root.createElement('data')
         self.root.appendChild(self.data)
 
-    def save(self):
+    def save(self, verbose = False):
         """Writes and saves the XML file"""
 
         save_file = "../mtx/src/uploads/parsed_metar.xml"
 
         xml_str = self.root.toprettyxml(indent = "\t")
+        if os.path.exists(save_file):
+            os.remove(save_file)
+
         with open(save_file, "w") as f:
             f.write(xml_str)
 
@@ -158,15 +161,20 @@ class XMLMaker:
         remarkChild.setAttribute('value', remarks)
         self.data.appendChild(remarkChild)
 
-def make_xml(metar = None): # the function that the user will call when they click the button
+    def add_metar(self, metar):
+        """Adds the original metar to the file"""
 
-    if metar is None:
-        metar = sys.argv[0]
+        metarChild = self.root.createElement("metar")
+        metarChild.setAttribute('value', metar)
+        self.data.appendChild(metarChild)
+
+def make_xml(metar): # the function that the user will call when they click the button
 
     parsed = parse_metar(metar)
     xml = XMLMaker()
 
-    xml.add_comment("Test XML parsed METAR.")
+    xml.add_comment("XML file created by METAR parser.")
+    xml.add_metar(parsed['metar'])
     xml.add_location(parsed['location'])
     xml.add_date(parsed['date'])
     xml.add_auto(parsed['is_auto'])
@@ -191,4 +199,6 @@ def parse_metar(metar):
     return parsed.pack()
 
 if __name__ == "__main__":
-    make_xml('KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206')
+    metar = sys.argv[1:]
+    metar = " ".join(metar)
+    make_xml(metar)

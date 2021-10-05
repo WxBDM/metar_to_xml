@@ -19,18 +19,34 @@
       <h1>METAR Parser</h1>
     </div>
 
-    <div id="input">
-        <p>Input metar here:<br>
-        <input type='text' id='TextBox' name="input_field">
-        <input type="button" id="SubmitButton" value="Submit METAR" onclick="SubmitMetar()">
+    <div id='steps'>
+      <div id="step1">
+        <h4>Step 1:</h4>
+        <p>Copy a METAR from the <a href="https://www.aviationweather.gov/metar" target="_blank">Aviation Weather Center.</a>
+      </div>
+      <div id='step2'>
+        <h4>Step 2:</h4>
+        <p>Go to terminal, navigate to where <code>xml_maker</code> is located and type:
+          <pre>
+            <code>python3 xml_maker.py</code>
+          </pre>
+        <p>and paste the METAR you had copied from above.
+      </div>
+      <div id="step3">
+        <h4>Step 3:</h4>
+        <p>Click this button to display results:
+        <input type="button" id="SubmitButton" value="Display METAR" onclick="DisplayMETAR()">
+      </div>
     </div>
 
     <div id="results">
       <h3><u>Parsed METAR</u></h3>
-      <div id="display_metar">
-        <p>Input your METAR in the text box above.
+      <hr>
+      <div id="metar_display">
+        <p>Follow the steps above. If done correctly, the below section will be filled out.
         <!-- This is where JS fills in the gap -->
       </div>
+      <hr>
       <div id="metar_download">
         <p>You can download the associated XML file <a href="/uploads/parsed_metar.xml" download>here</a>.
       <div>

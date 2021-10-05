@@ -1,45 +1,15 @@
 'use strict';
 
-// Click the button, get a new message.
+// Click the button, opens text file where the XML file is.
+// Displays the METAR from the XML file.
 var metarParsed = document.getElementById("SubmitButton");
 metarParsed.onclick = function() {
 
-  // Get the value from the text box (in this case, the metar)
-  var textFromTextBox = document.getElementById("TextBox").value
-
-  // Checking to ensure that there isn't anything there.
-  if (!textFromTextBox) {
-    string_to_show = "No METAR inputted."
-  }
-  else { // There is a valid metar that shows.
-
-    exec(`python3 ../../metar_to_xml/xml_maker.py ${textFromTextBox}`, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-    });
-
-    const { exec } = require("child_process");
-
-    // construct the string.
-    var string_to_show = `<p>METAR: ${textFromTextBox}<br>`
-
-    // Call the constructTable function to create the table.
-    // Append it to the string to show on the web page.
-    var table = constructTable()
-    string_to_show += table
-  }
-
-  document.getElementById('display_metar').innerHTML = string_to_show;
+    // Put the entire table and METAR on the screen.
+    document.getElementById('metar_display').innerHTML = constructTable();
 }
 
-class TableConstructor {
+class TableCreator {
   // A constructor for the table.
   constructor(xmlDoc) {
     this.doc = xmlDoc;
@@ -76,11 +46,6 @@ class TableConstructor {
   }
 }
 
-function tagName(tag) {
-  // To clean up the code a bit.
-  return xmlDoc.getElementsByTagName(tag);
-}
-
 function constructTable() {
 
   var file = new XMLHttpRequest();
@@ -92,37 +57,87 @@ function constructTable() {
   var xmlDoc = parser.parseFromString(file.responseText,"text/xml");
 
   // Create a new table object. Cleans code up considerably, makes it easier to read.
-  let table = new TableConstructor(xmlDoc);
+  let table = new TableCreator(xmlDoc);
+
+  table.setTag("metar");
+  table.addRow("Original Metar", table.getAttr('value'));
 
   table.setTag("location");
   table.addRow("Location", table.getAttr("value"));
 
   table.setTag("time");
   table.addRow("Day", table.getAttr("day"));
-  table.addRow("Time", table.getAttr("time") + " " + table.getAttr("unit"));
+  table.addRow("Time", table.getAttr("time") + table.getAttr("unit"));
 
-  table.setTag("automated")
+  table.setTag("automated");
   table.addRow("Automated", table.getAttr("value"));
 
-  // TODO: wind
+  let wind_str = ""
+  table.setTag("direction");
+  if (table.getAttr('value') === 'VRB') {
+    wind_str += "Variable winds at "
+  }
+  else {
+    wind_str += `${table.getAttr('value')} winds at `
+  }
+  table.setTag("speed");
+  wind_str += `${table.getAttr('value')} knots`
+
+  table.setTag("gust");
+  if (table.getAttr("value") != 0) {
+    wind_str += `, Gusting at ${table.getAttr('value')} knots.`
+  }
+  else {
+    wind_str += '.' // it's a sentence, need to end it properly :^)
+  }
+  table.addRow("Wind", wind_str);
+
   // TODO: visibility
+  table.setTag("visibility");
+  table.addRow("Visibility", `${table.getAttr("value")} SM`);
+
+  // RVR. Not always there.
+  table.setTag("rvr");
+  let runway_attr = table.getAttr("runway");
+  if (runway_attr !== "None") {
+    let rvr_str = "";
+    rvr_str += `Runway: ${runway_attr}\n`;
+    rvr_str += `Distance: ${table.getAttr("distance")}`;
+    let trend_attr = table.getAttr("trend");
+    if (trend_attr !== "None") {
+      rvr_str += `\nTrend: ${trend_attr}`;
+    }
+    table.addRow("Runway Visual Range", rvr_str);
+  }
 
   //always None until parser gets updated.
-  table.setTag("wxconditions")
-  table.addRow("Conditions", table.getAttr("values"));
+  table.setTag("wxconditions");
+  table.addRow("Conditions", "N/A (not implemented)");
 
-  // TODO: cloud coverage.
+  let layers = table.setTag("layer");
+  let cloud_str = ""
+  for (let i = 0; i < layers.length; i++) {
+    let coverage_attr = layers[i].getAttribute("coverage");
+    if (coverage_attr !== "None") {
+      let height_attr = layers[i].getAttribute("height");
+      cloud_str += `${coverage_attr} at ${height_attr} FT, `
+    }
+  }
+  if (cloud_str === "") {
+    cloud_str = "None";
+  }
+  table.addRow("Cloud Coverage", cloud_str);
 
-  table.setTag("temperature")
+  table.setTag("temperature");
   table.addRow("Temperature", table.getAttr("value") + " " + table.getAttr("unit"));
 
-  table.setTag("dewpoint")
+  table.setTag("dewpoint");
   table.addRow("Dewpoint", table.getAttr("value") + " " + table.getAttr("unit"));
 
-  table.setTag("altimeter")
+  table.setTag("altimeter");
   table.addRow("Altimeter", table.getAttr("value") + " " + table.getAttr("unit"));
 
-  table.setTag("remarks")
+  table.setTag("remarks");
   table.addRow("Remarks", table.getAttr("value"));
 
   return table.getFullTableString();
