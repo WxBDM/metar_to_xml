@@ -39,16 +39,13 @@ class Parser:
     NOTE: this does not handle XML construction. Output examples should be structured
     exaclty as such so that parsing for XML construction is made easier."""
 
-    def __init__(self, metar = None, test_val = None):
+    def __init__(self, metar = None):
 
-        if all([metar is None, test_val is None]):
+        if metar is None:
             msg = "Be sure to put in either a testing value or a metar."
             raise ValueError(msg)
 
-        if test_val is None:
-            self._metar = metar
-        else:
-            self._metar = testing_value
+        self._metar = metar
 
         # This is how we're going to get the values.
         self._parsedObject = ParsedObject()
@@ -99,33 +96,38 @@ class Parser:
             self._parsedObject.is_auto = "False"
 
     def wind(self):
+        """Parses for wind."""
+        # 01015KT -> ['010', '15', '0']
+        # 01015G21KT -> ['010', '15', '21']
+        # VRB02KT -> ['VRB', '02', '0']
 
         def as_str(data): # helper function to increase code reading.
             return str(int(data))
 
-        regex_vals = ["([0-9]{5}KT)", "([0-9]{5}G[0-9]{2}KT)", "(VRB[0-9]{2}KT)"]
-        for n, regex in enumerate(regex_vals):
-            match = self._compile_and_find(regex)
-            if len(match) == 0: # if it's not a sucessful match, go to the next regex.
-                continue
+        regex = "([0-9]{5}KT)|([0-9]{5}G[0-9]{2}KT)|(VRB[0-9]{2}KT)"
+        match = self._compile_and_find(regex)
 
-            if n == 0: # normal metar (01015KT => [N, 10, 15, 0] )
-                data = match[0]
-                wind_dir = get_wind_direction_from_degrees(int(data[:3]))
-                self._parsedObject.wind = [wind_dir, as_str(data[:3]), as_str(data[3:5]), '0']
+        data = None
+        for val in match[0]: # match is in [('15007KT', '', '')]
+            if val != '':
+                data = val # match exists
                 break
 
-            if n == 1: # metar with gust (08023G33KT => [E, 80, 23, 33] )
-                data = match[0]
-                wind_dir = get_wind_direction_from_degrees(int(data[:3]))
-                gust = data.split("G")[1] # splits along the gust variable.
-                # spaghetti, but changing data type and slicing a string.
-                self._parsedObject.wind = [wind_dir, as_str(data[:3]), as_str(data[3:5]), gust[:2]]
-                break
+        # if for some reason there isn't a wind value, return a dummy variable.
+        if data is None:
+            return 0
 
-            if n == 2: # VRB metar (VRB03KT => [VRB, VRB, 3, 0] )
-                self._parsedObject.wind = ['VRB', 'VRB', as_str(match[0][3:5]), "0"]
-                break
+        if 'VRB' in data:
+            self._parsedObject.wind = ['VRB', 'VRB', as_str(data[3:5]), "0"]
+
+        else:
+            wind_dir = get_wind_direction_from_degrees(int(data[:3]))
+            data = data.split("G") # without gust: [abc], with gust: [abc, def]
+
+            if len(data) == 1: # there is not a gust
+                self._parsedObject.wind = [wind_dir, as_str(data[0][:3]), as_str(data[0][3:5]), '0']
+            else: # there is a gust
+                self._parsedObject.wind = [wind_dir, as_str(data[0][:3]), as_str(data[0][3:5]), data[1]]
 
     def visibility(self):
         # Input 10SM
