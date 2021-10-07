@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 try:
-    from utils import get_wind_direction_from_degrees
+    from utils import get_wind_direction_from_degrees, NullReturn
 except ModuleNotFoundError:
     from metar_to_xml.utils import get_wind_direction_from_degrees
 
@@ -104,18 +104,17 @@ class Parser:
         def as_str(data): # helper function to increase code reading.
             return str(int(data))
 
+        # regex expression, get matches.
         regex = "([0-9]{5}KT)|([0-9]{5}G[0-9]{2}KT)|(VRB[0-9]{2}KT)"
         match = self._compile_and_find(regex)
 
-        data = None
+        # if for some reason there isn't a wind value, return a dummy variable.
+        if len(match) == 0:
+            return NullReturn()
+
         for val in match[0]: # match is in [('15007KT', '', '')]
             if val != '':
                 data = val # match exists
-                break
-
-        # if for some reason there isn't a wind value, return a dummy variable.
-        if data is None:
-            return 0
 
         if 'VRB' in data:
             self._parsedObject.wind = ['VRB', 'VRB', as_str(data[3:5]), "0"]
@@ -204,7 +203,7 @@ class Parser:
         match = self._compile_and_find(regex)
 
         if len(match) == 0: # it is possible to have no obs
-            return 0 # dummy return, don't do anything with it.
+            return NullReturn() # dummy return, don't do anything with it.
 
         cloud_d = {'CLR' : 'Clear', 'FEW' : 'Few', 'SCT' : 'Scattered',
                     'BKN' : 'Broken', 'OVC' : 'Overcast'}

@@ -15,6 +15,10 @@
 # NW 303.75 - 326.25
 # NNW 326.25 - 348.75
 
+class NullReturn:
+    """Used for a null return. That is, nothing should be done with this."""
+    pass
+
 def get_wind_direction_from_degrees(degrees):
 
     if not isinstance(degrees, int) and not isinstance(degrees, float):
