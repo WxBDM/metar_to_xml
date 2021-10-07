@@ -173,3 +173,96 @@ def test_rvr_parsed(all_parsed):
 
     # TODO: add the test cases here. Guarenteed to fail until done.
     assert False is True
+
+@pytest.mark.usefixtures("all_parsed")
+def test_wx_conditions_parsed(all_parsed):
+    """Tests weather conditions to ensure it's formatted properly."""
+
+    expected = [{'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'},
+                {'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'},
+                {'parsed' : 'HZ', 'value' : 'HZ', 'string' : 'Haze'},
+                {'parsed' : 'VCTS', 'value' : 'VCTS',
+                    'string' : 'Thunderstorm in the Vicitity'},
+                {'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'},
+                {'parsed' : '-DZ BR', 'value' : '-DZ BR',
+                    'string' : 'Light drizzle, mist'}]
+
+    # TODO: add the test cases here. Guarenteed to fail until done.
+    assert False is True
+
+@pytest.mark.usefixtures("all_parsed")
+def test_wx_conditions_parsed(all_parsed):
+    """Tests cloud coverage to ensure it's formatted properly."""
+
+    # Future note: Could reformat as such (but will break an above test):
+    # {'parsed' : 'text',
+    #   'layers' : {'l1_cond' : 'text', 'l1_hgt' : 'text', ...},
+    #   'units' : 'feet', 'string' : 'The associated string'
+    #  }
+
+    expected = [{'parsed' : 'OVC014',
+                'l1_cond' : 'Overcast', 'l1_hgt' : '1400',
+                'l2_cond' : 'None', 'l2_hgt' : 'None',
+                'l3_cond' : 'None', 'l3_hgt' : 'None',
+                'l4_cond' : 'None', 'l4_hgt' : 'None',
+                'unit' : 'feet', 'string' : 'Overcast at 1400 feet.'},
+                {'parsed' : 'SCT040',
+                'l1_cond' : 'Scattered', 'l1_hgt' : '4000',
+                'l2_cond' : 'None', 'l2_hgt' : 'None',
+                'l3_cond' : 'None', 'l3_hgt' : 'None',
+                'l4_cond' : 'None', 'l4_hgt' : 'None',
+                'unit' : 'feet', 'string' : 'Scattered at 4000 feet.'},
+                {'parsed' : 'SCT000',
+                'l1_cond' : 'Scattered', 'l1_hgt' : '0000',
+                'l2_cond' : 'None', 'l2_hgt' : 'None',
+                'l3_cond' : 'None', 'l3_hgt' : 'None',
+                'l4_cond' : 'None', 'l4_hgt' : 'None',
+                'unit' : 'feet', 'string' : 'Scattered at surface.'},
+                {'parsed' : 'FEW020 FEW038 SCT110 BKN160',
+                'l1_cond' : 'Few', 'l1_hgt' : '2000',
+                'l2_cond' : 'Few', 'l2_hgt' : '3800',
+                'l3_cond' : 'Scattered', 'l3_hgt' : '11000',
+                'l4_cond' : 'Broken', 'l4_hgt' : '16000',
+                'unit' : 'feet',
+                'string' : 'Few at 2000 feet, Few at 3800 feet, Scattered at \
+                            11000 feet, Broken at 16000 feet.'},
+                {'parsed' : 'None',
+                'l1_cond' : 'None', 'l1_hgt' : 'None',
+                'l2_cond' : 'None', 'l2_hgt' : 'None',
+                'l3_cond' : 'None', 'l3_hgt' : 'None',
+                'l4_cond' : 'None', 'l4_hgt' : 'None',
+                'unit' : 'feet', 'string' : 'N/A'},
+                {'parsed' : 'BKN005 OVC010',
+                'l1_cond' : 'Broken', 'l1_hgt' : '500',
+                'l2_cond' : 'Overcast', 'l2_hgt' : '1000',
+                'l3_cond' : 'None', 'l3_hgt' : 'None',
+                'l4_cond' : 'None', 'l4_hgt' : 'None',
+                'unit' : 'feet', 'string' : 'Broken at 500 feet, Overcast at 1000 feet.'}
+               ]
+
+    # TODO: add the test cases here. Guarenteed to fail until done.
+    assert False is True
+
+@pytest.mark.usefixtures("all_parsed")
+def test_location_formatting(all_parsed):
+    """Tests the location formatting.
+
+    Expected Example: {'parsed' : 'KIAH', string : 'KIAH'}
+    """
+
+    # TO DO: This. Lunch time.
+    expected = [{'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"},
+                {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"},
+                {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"},
+                {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"},
+                {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"},
+                {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
+                    'string' : "11°C (51.8°F)"}]
+
+    # TODO: add in the test case here. Guarenteed to fail unit done.
+    assert False is True
