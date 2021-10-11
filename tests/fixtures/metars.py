@@ -41,3 +41,7 @@ def runway_visual_range_metar():
 @pytest.fixture
 def wx_conditions_vicinity(multiple_cloud_layer_metar):
     return multiple_cloud_layer_metar
+
+@pytest.fixture
+def vertical_visibility():
+    return "KHVR 081327Z AUTO 31005KT 1/2SM FZFG VV003 M03/M03 A3002 RMK AO2 T10331033"

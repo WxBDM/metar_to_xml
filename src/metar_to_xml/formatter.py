@@ -1,4 +1,8 @@
 """File to format the data coming in from the Parser to the XML maker."""
+try:
+    from utils import get_wind_direction_from_degrees, NullReturn
+except ModuleNotFoundError:
+    from metar_to_xml.utils import get_wind_direction_from_degrees, NullReturn
 
 # This is what is coming FROM the parser.
 # {'location' : 'KIAH', 'date' : '141953Z', 'is_auto' : 'False',
@@ -43,63 +47,242 @@
 # }
 
 def format_parsed_information(parsed):
-    pass
+
+    d = {'location' : location(parsed['location']),
+        'date' : date(parsed['date']),
+        'is_auto' : is_auto(parsed['is_auto']),
+        'wind' : wind(parsed['wind']),
+        'visibility' : visibility(parsed['visibility']),
+        'rvr' : rvr(parsed['runway_visual_range']),
+        'wxconditions' : conditions(parsed['wxconditions']),
+        'cloud_coverage' : coverage(parsed['cloudcoverage']),
+        'temperature' : temperature(parsed['t_td']),
+        'dewpoint' : dewpoint(parsed['t_td']),
+        'altimeter' : altimeter(parsed['altimeter']),
+        'remarks' : remarks(parsed['remarks'])
+        }
+
+    return d
 
 def location(loc):
     """Function to format location"""
 
-    return 0
+    if loc == 'None':
+        return {'parsed' : 'None', 'string' : 'N/A'}
+
+    return {'parsed' : loc, 'string' : loc}
+
 
 def date(date):
     """Function to format date"""
 
-    return 0
+    if date == 'None':
+        return {'parsed' : 'None', 'day' : 'None', 'time' : 'None',
+            'unit' : 'None', 'string' : 'None'}
+
+    # {'parsed' : '141953Z', 'day' : '14', 'time': '1953', 'unit' : 'Z',
+    #                 'string' : '14th at 19:53z'},
+    day = date[:2]
+    time = date[2:-1]
+
+    #1st 2nd 3rd, ..., 20th, etc
+    if int(day) in [11, 12, 13]:
+        postfix = 'th'
+    elif int(day[-1]) == 1:
+        postfix = 'st'
+    elif int(day[-1]) == 2:
+        postfix = 'nd'
+    elif int(day[-1]) == 3:
+        postfix = 'rd'
+    else:
+        postfix = 'th'
+
+    # construct the string
+    string_repr = f"{int(day)}{postfix} at {time[:2]}:{time[2:]}z"
+
+    return {'parsed' : date, 'day' : day, 'time' : time, 'unit' : 'Z',
+        'string' : string_repr}
 
 def is_auto(auto):
     """Function to format auto"""
 
-    return 0
+    if auto == 'None':
+        return {'parsed' : 'None', 'string': 'N/A'}
+
+    if auto == "True":
+        formatted = "Yes"
+    else:
+        formatted = "No"
+
+    return {'parsed' : auto, 'string': formatted}
 
 def wind(wind):
     """Function to format wind"""
 
-    return 0
+    wind_dir_str = {'N' : 'North', 'NNE' : "North-North East", 'NE' : 'Northeast',
+        'ENE' : 'East-Northeast', 'E' : 'East', 'ESE' : 'East-Southeast',
+        'SE' : 'Southeast', 'SSE' : 'South-Southeast', 'S' : 'South',
+        'SSW' : 'South-Southwest', 'SW' : 'Southwest', 'WSW': 'West-Southwest',
+        'W' : 'West', 'WNW' : 'West-Northwest', 'NW' : 'Northwest',
+        'NNW' : 'North-Northwest'}
+
+    if wind == 'None': # some stations don't report wind (???)
+        return {'parsed' : 'None', 'direction' : 'None', 'speed' : 'None',
+                'gust' : 'None', 'unit' : 'kts', 'string' : 'N/A'}
+
+    if wind[0:3] == 'VRB':
+        dir = 'VRB'
+        dir_english = 'Variable'
+    elif wind[0:-2] == '00000':
+        dir = 'Calm'
+        dir_english = 'Calm'
+    else:
+        dir = get_wind_direction_from_degrees(int(wind[0:3]))
+        dir_english = wind_dir_str[dir]
+
+    speed = int(wind[3:5])
+    mph = '{:.2f}'.format(round(speed * 1.150779, 2))
+    gust = 0 # assume it's 0, checking happens below.
+    string_repr = f'{dir_english} at {speed}kts ({mph}mph)'
+
+    cache_wind = wind.split("G")
+    if len(cache_wind) == 2: # gust exists
+        gust = cache_wind[1][:2]
+        mph_gust = '{:.2f}'.format(round(speed * 1.150779, 2))
+        string_repr += f', gusting at {gust} ({mph_gust}mph)'
+
+    return {'parsed' : wind, 'direction' : dir, 'speed' : str(speed),
+    'gust' : str(gust), 'unit' : 'kts', 'string' : string_repr + '.'}
 
 def visibility(vis):
     """Function to format visibility"""
-    return 0
+
+    if vis == 'None':
+        return {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
+                'string': 'N/A'}
+
+    value = vis[:-2]
+
+    return {'parsed' : 'None', 'value' : value, 'unit' : 'SM',
+    'string' : f'{value} Statute Miles.'}
 
 def rvr(rvr):
     """Function to format runway visual range"""
 
-    return 0
+    d = {'parsed' : 'None', 'runway' : 'None', 'value' : 'None',
+            'unit' : 'None', 'string' : 'N/A'}
+
+    if rvr == "None":
+        return d
+
+    d['parsed'] = rvr
+    cache_split = rvr.split("/")
+    d['unit'] = 'feet'
+    d['runway'] = f'{cache_split[0][-2:]}'
+
+    # Need to check for "V" in the visual. This is "x to y".
+    cache_split = cache_split[1].split("V")
+    for index, element in enumerate(cache_split):
+        if 'M' in element:
+            cache_split[index] = f'<{element}'
+        if 'P' in element:
+            cache_split[index]= f'>{element}'
+
+    value_str = cache_split[0]
+    if len(cache_split) == 2:
+        value_str += " to " + cache_split[1]
+    d['value'] = value_str
+    string_repr = f'Runway {cache_split[0][-2:]} at {value_str} feet.'
+    d['string'] = string_repr
+
+    return d
 
 def conditions(cond):
     """Function to format weather conditions"""
 
-    return 0
+    d = {'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'}
+
+    if cond == "None":
+        return d
+
+    return d #TODO: fix this! Tests will always fail.
 
 def coverage(cov):
     """Function to format coverage"""
 
-    return 0
+    d = {'parsed' : 'None', 'l1_cond' : 'None', 'l1_hgt' : 'None',
+        'l2_cond' : 'None', 'l2_hgt' : 'None', 'l3_cond' : 'None', 'l3_hgt' : 'None',
+        'l4_cond' : 'None', 'l4_hgt' : 'None', 'unit' : 'None', 'string' : 'N/A'}
+
+    if cov == "None":
+        return d
+
+    d['parsed'] = cov # add in the parsed string
+    d['unit'] = 'feet' # set the unit.
+    coverage_split = cov.split(" ")
+
+    # enumerate it: see default dictionary cond and hgt vars.
+    cloud_d = {'CLR' : 'Clear', 'FEW' : 'Few', 'SCT' : 'Scattered',
+                'BKN' : 'Broken', 'OVC' : 'Overcast'}
+    string = ''
+    for index, element in enumerate(coverage_split):
+        if 'CLR' in element:
+            d[f'l{index}_cond'] = 'Clear'
+            d[f'l{index}_hgt'] = '0'
+            string = 'Clear.'
+        else:
+
+            if index > 2: # adds in the comma appropriately.
+                string += ", "
+
+            # extract the conditions, make english-like, same with height.
+            conditions = cloud_d[element[:3]]
+            height =  str(int(element[3:]) * 100)
+            # add into dictionary at appropriate height level.
+            # syntax a bit tricky, but iterating through l1_hgt, l2_hgt, etc
+            d[f'l{index}_cond'] = conditions
+            d[f'l{index}_hgt'] = height
+            # form the string and append.
+            string += conditions + " at " + height + " feet"
+
+    string += '.' # append a period to the string.
+    d['string'] = string # add in the string.
+    return d
 
 def temperature(t):
     """Function to format temperature"""
 
-    return 0
+    d = {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
+        'string' : "None"}
+
+    if t == 'None':
+        return d
+
+    return d
 
 def dewpoint(td):
     """Function to format dewpoint"""
 
-    return 0
+    d = {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
+        'string' : "None"}
+
+    if td == 'None':
+        return d
+
+    return d
 
 def altimeter(alt):
     """Function to format altimeter"""
 
-    return 0
+    d = {'parsed' : 'A2972', 'value' : '29.72',
+        'unit' : 'inHg', 'string' : '29.72 inHg'}
+
+    if alt == 'None':
+        return d
+
+    return d
 
 def remarks(rmk):
-    """Function to format remarks"""
+    """Function to format remarks."""
 
-    return 0
+    return {'parsed' : 'None', 'string' : 'N/A'}

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 try:
     from utils import get_wind_direction_from_degrees, NullReturn
 except ModuleNotFoundError:
-    from metar_to_xml.utils import get_wind_direction_from_degrees
+    from metar_to_xml.utils import get_wind_direction_from_degrees, NullReturn
 
 @dataclass
 class ParsedObject:
