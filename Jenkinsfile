@@ -36,5 +36,8 @@ pipeline {
       always {
         cleanWs()
       }
+      failure {
+        sh "exit 1"
+      }
     }
 }
