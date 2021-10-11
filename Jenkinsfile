@@ -35,9 +35,10 @@ pipeline {
     post {
       always {
         cleanWs()
-      }
-      failure {
-        sh "exit 1"
+        if (stageResult.equals("SUCCESS")) {
+           } else {
+              error 'FAIL' //sh "exit 1" // this fails the stage
+           }
       }
     }
 }
