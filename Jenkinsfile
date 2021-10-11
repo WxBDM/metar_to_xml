@@ -23,7 +23,7 @@ pipeline {
         }
         stage("Testing Formatter") {
           steps {
-            sh source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_formater.py --verbose"
+            sh "source mtx/bin/activate && pytest ${env.WORKSPACE}/tests/test_formatter.py --verbose"
           }
         }
     }
