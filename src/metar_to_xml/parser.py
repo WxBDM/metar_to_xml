@@ -108,7 +108,7 @@ class Parser:
         regex = '\s([+-])?(VC)?(?:MI|PR|BC|DR|BL|SH|TS|FZ)?(?:DZ|RA|SN|SG|IC|PL|GR|GS|UP)?(\s)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS)?\s'
         match = re.search(fr"{regex}", self._metar)
         if match is not None:
-            self._d['conditions'] = match.group()
+            self._d['conditions'] = match.group().strip()
 
     def cloudcoverage(self):
         regex = 'CLR|FEW[0-9]{3}|SCT[0-9]{3}|BKN[0-9]{3}|OVC[0-9]{3}'

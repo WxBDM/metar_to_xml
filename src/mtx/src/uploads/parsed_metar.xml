@@ -1,22 +1,22 @@
 <?xml version="1.0" ?>
 <data>
-  <metar>KMBS 231423Z 33021G30KT 1 1/4SM R23/5000VP6000FT -RA BR SCT006 OVC010 10/09 A2970 RMK AO2 PK WND 33030/1417 P0005 T01000089</metar>
-  <location>KMBS</location>
-  <date day="23" time="1423" unit="Z">23rd at 14:23z</date>
-  <auto>No</auto>
-  <wind direction="NNW" speed="21" gust="30" unit="kts">North-Northwest at 21kts (24.17mph), gusting at 30kts (34.52mph).</wind>
-  <visibility value="1 1/4" unit="SM">1 1/4 Statute Miles</visibility>
-  <rvr runway="23" value="5000 to &gt;6000" unit="feet">Runway 23 at 5000 to &gt;6000 feet.</rvr>
-  <conditions value="-RA BR">Light Rain Mist </conditions>
+  <metar>KMPV 121351Z AUTO 00000KT 1/4SM FG VV001 12/11 A3020 RMK AO2 SLP229 T01170111</metar>
+  <location>KMPV</location>
+  <date day="12" time="1351" unit="Z">12th at 13:51z</date>
+  <auto>Yes</auto>
+  <wind direction="Calm" speed="0" gust="0" unit="kts">Calm (0.00mph).</wind>
+  <visibility value="Vertical Visibility: 100" unit="ft">Vertical Visibility: 100 Feet</visibility>
+  <rvr runway="None" value="None" unit="None">N/A</rvr>
+  <conditions value="FG">Fog</conditions>
   <cloudcoverage>
-    Scattered at 600 feet.
-    <layer coverage="Scattered" height="600" unit="feet"/>
+    N/A
+    <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
   </cloudcoverage>
-  <temperature value="10" unit="C">10°C (50.0°F)</temperature>
-  <dewpoint value="9" unit="C">9°C (48.2°F)</dewpoint>
-  <altimeter value="29.70" unit="inHg">29.70 inHg</altimeter>
-  <remarks>RMK AO2 PK WND 33030/1417 P0005 T01000089</remarks>
+  <temperature value="12" unit="C">12°C (53.6°F)</temperature>
+  <dewpoint value="11" unit="C">11°C (51.8°F)</dewpoint>
+  <altimeter value="30.20" unit="inHg">30.20 inHg</altimeter>
+  <remarks>RMK AO2 SLP229 T01170111</remarks>
 </data>

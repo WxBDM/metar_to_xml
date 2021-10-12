@@ -144,11 +144,12 @@ class XMLMaker:
 
 def make_xml(metar): # the function that the user will call when they click the button
 
+    print(metar)
     parser = Parser(metar)
     parsed = parser.parse()
 
+    print(parsed)
     formatted = format_parsed_information(parsed)
-    print(formatted.keys())
 
     xml = XMLMaker()
     # xml.add_comment("XML file created by METAR parser.")

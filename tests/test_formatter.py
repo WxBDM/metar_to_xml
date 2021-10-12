@@ -98,7 +98,7 @@ class TestFormatterFunctionDictionaryKeys:
         """Tests proper values of the rvr dict exist"""
 
         for d in all_parsed:
-            formatted = rvr(d['runway_visual_range'])
+            formatted = rvr(d['rvr'])
             assert 'runway' in formatted
             assert 'value' in formatted
             assert 'unit' in formatted
@@ -109,7 +109,7 @@ class TestFormatterFunctionDictionaryKeys:
         """Tests keys of the wxconditions dict exist"""
 
         for d in all_parsed:
-            formatted = conditions(d['wxconditions'])
+            formatted = conditions(d['conditions'])
             assert 'value' in formatted
             assert 'parsed' in formatted
             assert 'string' in formatted
@@ -118,7 +118,7 @@ class TestFormatterFunctionDictionaryKeys:
         """Tests keys of the cloud coverage dict exist"""
 
         for d in all_parsed:
-            formatted = coverage(d['cloudcoverage'])
+            formatted = coverage(d['coverage'])
             assert 'l1_cond' in formatted
             assert 'l1_hgt' in formatted
             assert 'l2_cond' in formatted
@@ -303,7 +303,7 @@ class TestFormatterFunctionDictionaryExactly:
                         'value' : '5000 to >6000', 'unit' : 'feet',
                         'string' : 'Runway 23 at 5000 to >6000 feet.'}]
 
-        self.run_and_assert(expected, rvr, all_parsed, 'runway_visual_range',
+        self.run_and_assert(expected, rvr, all_parsed, 'rvr',
                 append_d = runway_visual_range_parsed)
 
     def test_wx_conditions_parsed(self, all_parsed):
@@ -313,12 +313,12 @@ class TestFormatterFunctionDictionaryExactly:
                     {'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'},
                     {'parsed' : 'HZ', 'value' : 'HZ', 'string' : 'Haze'},
                     {'parsed' : 'VCTS', 'value' : 'VCTS',
-                        'string' : 'Thunderstorm in the Vicitity'},
+                        'string' : 'Thunderstorm in the vicinity'},
                     {'parsed' : 'None', 'value' : 'None', 'string' : 'N/A'},
                     {'parsed' : '-DZ BR', 'value' : '-DZ BR',
-                        'string' : 'Light drizzle, mist'}]
+                        'string' : 'Light Drizzle Mist'}]
 
-        self.run_and_assert(expected, conditions, all_parsed, 'wxconditions')
+        self.run_and_assert(expected, conditions, all_parsed, 'conditions')
 
     def test_cloud_coverage_parsed(self, all_parsed):
         """Tests cloud coverage to ensure it's formatted properly."""
@@ -369,7 +369,7 @@ class TestFormatterFunctionDictionaryExactly:
                     'unit' : 'feet', 'string' : 'Broken at 500 feet, Overcast at 1000 feet.'}
                    ]
 
-        self.run_and_assert(expected, coverage, all_parsed, 'cloudcoverage')
+        self.run_and_assert(expected, coverage, all_parsed, 'coverage')
 
     def test_temperature_formatting(self, all_parsed):
         """Tests the temperature formatting."""
@@ -468,4 +468,7 @@ class TestFormatterFunctionDictionaryExactly:
         for expected_d in all_parsed:
             actual_d = format_parsed_information(expected_d)
             for element in actual_d:
-                assert isinstance(actual_d[element], dict)
+                if element == 'metar':
+                    assert isinstance(actual_d[element], str)
+                else:
+                    assert isinstance(actual_d[element], dict)

@@ -74,7 +74,7 @@ class TestParsingLogic:
 
         parser = Parser(multiple_wx_conditions_metar)
         actual = parser.parse()
-        assert actual['conditions'] == '-RA BR'
+        assert actual['conditions'] == '-DZ BR'
 
     @pytest.mark.usefixtures('wx_conditions_vicinity')
     def test_wxconditions_vicinity(self, wx_conditions_vicinity):

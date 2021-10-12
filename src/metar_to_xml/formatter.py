@@ -49,6 +49,8 @@ except ModuleNotFoundError:
 
 def format_parsed_information(parsed):
 
+    print(parsed)
+    print(parsed['metar'])
 
     d = {'location' : location(parsed['location']),
         'date' : date(parsed['date']),
@@ -251,7 +253,7 @@ def conditions(cond):
         str_repr += 'Freezing '
 
     if 'VC' in cond: # this can't be part of intensity or proximity, order matters.
-        str_repr
+        str_repr_append += "in the vicinity"
 
     # Conditions
     if 'DZ' in cond:
@@ -302,7 +304,12 @@ def conditions(cond):
     if 'SS' in cond:
         str_repr += 'Sandstorm/Duststorm '
 
-    return  {'parsed' : 'None', 'value' : cond, 'string' : str_repr}
+    if str_repr_append != '':
+        str_repr += str_repr_append
+    else:
+        str_repr = str_repr.strip()
+
+    return  {'parsed' : cond, 'value' : cond, 'string' : str_repr}
 
 def coverage(cov):
     """Function to format coverage"""
