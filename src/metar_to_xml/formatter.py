@@ -271,6 +271,8 @@ def conditions(cond):
         str_repr += 'Small Hail/Snow Pellets '
     if 'UP' in cond:
         str_repr += 'Unknown Precip '
+    if 'RADZ' in cond:
+        str_repr += 'Drizzling Rain '
 
     # Obscurations
     if 'BR' in cond:

@@ -68,15 +68,15 @@ class Parser:
 
     def wind(self):
         """Parses for wind."""
-        # 01015KT -> ['010', '15', '0']
-        # 01015G21KT -> ['010', '15', '21']
-        # VRB02KT -> ['VRB', '02', '0']
+        # ULMM 121530Z 23001MPS 9999 -SHRA BKN015CB 04/04 Q0998 R13/290060 NOSIG RMK QFE742
+        # international metars use MPS (meters per second).
+        # Parser will pick it up.
 
         def as_str(data): # helper function to increase code reading.
             return str(int(data))
 
         # regex expression, get matches.
-        regex = "([0-9]{5}KT)|([0-9]{5}G[0-9]{2}KT)|(VRB[0-9]{2}KT)"
+        regex = "([0-9]{5}(KT|MPS))|([0-9]{5}G[0-9]{2}(KT|MPS))|(VRB[0-9]{2}(KT|MPS))"
         match = re.search(fr"{regex}", self._metar)
         if match is not None:
             self._d['wind'] = match.group()
@@ -99,13 +99,16 @@ class Parser:
     def runway_visual_range(self):
         """If a RVR exists in a METAR, return values from it."""
 
-        regex = "R[0-9LRC]{2,}\/[0-9MVP]{4,}FT(\/[UDN])?"
+        # ULMM 121530Z 23001MPS 9999 -SHRA BKN015CB 04/04 Q0998 R13/290060 NOSIG RMK QFE742
+        # Had to add in (FT)? as optional for RVR.
+
+        regex = "R[0-9LRC]{2,}\/[0-9MVP]{4,}(FT)?(\/[UDN])?"
         match = re.search(fr"{regex}", self._metar)
         if match is not None:
             self._d['rvr'] = match.group() # Gives a string (R23/5000VP6000FT)
 
     def wxconditions(self):
-        regex = '\s([+-])?(VC)?(?:MI|PR|BC|DR|BL|SH|TS|FZ)?(?:DZ|RA|SN|SG|IC|PL|GR|GS|UP)?(\s)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS)?\s'
+        regex = '\s([+-])?(VC)?(?:MI|PR|BC|DR|BL|SH|TS|FZ)?(?:DZ|RA|SN|SG|IC|PL|GR|GS|UP|RADZ)?(\s)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS)?\s'
 
         # Found anomylous metar CYHU 121500Z AUTO 20007KT 9SM 20/15 A3009 RMK CLD MISG SLP191 DENSITY ALT 600FT (10/12/21)
         # conditions stated "Shallow Snow Grains", this was picked up in remarks (MISG)
