@@ -43,23 +43,26 @@ except ModuleNotFoundError:
 #     'altimeter' : {'parsed' : 'A2972', 'value' : '29.72', 'unit' : 'inHg',
 #                     'string' : '29.72 inHg'},
 #     'remarks' : {'parsed' : 'RMK AO2 SLP064 T02500206',
-#                     'string' : 'AO2 SLP064 T02500206'}
+#                     'string' : 'AO2 SLP064 T02500206'},
+#     'metar' : 'KIAH 141953Z 01015KT 10SM OVC014 25/21 A2972 RMK AO2 SLP064 T02500206'
 # }
 
 def format_parsed_information(parsed):
+
 
     d = {'location' : location(parsed['location']),
         'date' : date(parsed['date']),
         'is_auto' : is_auto(parsed['is_auto']),
         'wind' : wind(parsed['wind']),
         'visibility' : visibility(parsed['visibility']),
-        'rvr' : rvr(parsed['runway_visual_range']),
-        'wxconditions' : conditions(parsed['wxconditions']),
-        'cloud_coverage' : coverage(parsed['cloudcoverage']),
+        'rvr' : rvr(parsed['rvr']),
+        'wxconditions' : conditions(parsed['conditions']),
+        'cloud_coverage' : coverage(parsed['coverage']),
         'temperature' : temperature(parsed['t_td']),
         'dewpoint' : dewpoint(parsed['t_td']),
         'altimeter' : altimeter(parsed['altimeter']),
-        'remarks' : remarks(parsed['remarks'])
+        'remarks' : remarks(parsed['remarks']),
+        'metar' : parsed['metar']
         }
 
     return d
@@ -143,13 +146,16 @@ def wind(wind):
     speed = int(wind[3:5])
     mph = '{:.2f}'.format(round(speed * 1.150779, 2))
     gust = 0 # assume it's 0, checking happens below.
-    string_repr = f'{dir_english} at {speed}kts ({mph}mph)'
+    if dir != 'Calm':
+        string_repr = f'{dir_english} at {speed}kts ({mph}mph)'
+    else:
+        string_repr = f'{dir_english} ({mph}mph)'
 
     cache_wind = wind.split("G")
     if len(cache_wind) == 2: # gust exists
         gust = cache_wind[1][:2]
-        mph_gust = '{:.2f}'.format(round(speed * 1.150779, 2))
-        string_repr += f', gusting at {gust} ({mph_gust}mph)'
+        mph_gust = '{:.2f}'.format(round(int(gust) * 1.150779, 2))
+        string_repr += f', gusting at {gust}kts ({mph_gust}mph)'
 
     return {'parsed' : wind, 'direction' : dir, 'speed' : str(speed),
     'gust' : str(gust), 'unit' : 'kts', 'string' : string_repr + '.'}
@@ -161,10 +167,17 @@ def visibility(vis):
         return {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
                 'string': 'N/A'}
 
-    value = vis[:-2]
+    if 'VV' not in vis:
+        value = vis[:-2]
+        unit = 'SM'
+        unit_english = 'Statute Miles'
+    else:
+        value = f'Vertical Visibility: {int(vis[2:]) * 100}'
+        unit = 'ft'
+        unit_english = 'Feet'
 
-    return {'parsed' : 'None', 'value' : value, 'unit' : 'SM',
-    'string' : f'{value} Statute Miles.'}
+    return {'parsed' : vis, 'value' : value, 'unit' : unit,
+    'string' : f'{value} {unit_english}'}
 
 def rvr(rvr):
     """Function to format runway visual range"""
@@ -178,21 +191,20 @@ def rvr(rvr):
     d['parsed'] = rvr
     cache_split = rvr.split("/")
     d['unit'] = 'feet'
-    d['runway'] = f'{cache_split[0][-2:]}'
+    d['runway'] = f'{cache_split[0][1:]}'
 
     # Need to check for "V" in the visual. This is "x to y".
     cache_split = cache_split[1].split("V")
     for index, element in enumerate(cache_split):
-        if 'M' in element:
-            cache_split[index] = f'<{element}'
-        if 'P' in element:
-            cache_split[index]= f'>{element}'
+        cache_split[index] = element.replace("M", "<")
+        cache_split[index] = element.replace("P", ">")
+        cache_split[index] = cache_split[index].replace("FT", "")
 
     value_str = cache_split[0]
     if len(cache_split) == 2:
         value_str += " to " + cache_split[1]
     d['value'] = value_str
-    string_repr = f'Runway {cache_split[0][-2:]} at {value_str} feet.'
+    string_repr = f'Runway {d["runway"]} at {value_str} feet.'
     d['string'] = string_repr
 
     return d
@@ -205,7 +217,92 @@ def conditions(cond):
     if cond == "None":
         return d
 
-    return d #TODO: fix this! Tests will always fail.
+    # this absolutely needs to get cleaned up, but it works for now.
+    cond = cond.strip()
+
+    str_repr = ''
+    str_repr_append = '' #string to append at the end.
+
+    # Intensity. Note that +FC depicts tornado or waterspout
+    if '-' in cond:
+        str_repr += 'Light '
+    if '+' in cond:
+        if '+FC' not in cond:
+            str_repr_append += 'Tornado/Waterspout'
+        else:
+            str_repr += 'Heavy '
+
+    # Descriptors
+    if 'MI' in cond:
+        str_repr += 'Shallow '
+    if 'PR' in cond:
+        str_repr += 'Partial '
+    if 'BC' in cond:
+        str_repr += 'Patches '
+    if 'DR' in cond:
+        str_repr += 'Low drifting '
+    if 'BL' in cond:
+        str_repr += 'Blowing '
+    if 'SH' in cond:
+        str_repr += 'Shower(s) '
+    if 'TS' in cond:
+        str_repr += 'Thunderstorm '
+    if 'FZ' in cond:
+        str_repr += 'Freezing '
+
+    if 'VC' in cond: # this can't be part of intensity or proximity, order matters.
+        str_repr
+
+    # Conditions
+    if 'DZ' in cond:
+        str_repr += 'Drizzle '
+    if 'RA' in cond:
+        str_repr += 'Rain '
+    if 'SN' in cond:
+        str_repr += 'Snow '
+    if 'SG' in cond:
+        str_repr += 'Snow Grains '
+    if 'IC' in cond:
+        str_repr += 'Ice Crystals '
+    if 'PL' in cond:
+        str_repr += 'Ice Pellents '
+    if 'GR' in cond:
+        str_repr += 'Hail '
+    if 'GS' in cond:
+        str_repr += 'Small Hail/Snow Pellets '
+    if 'UP' in cond:
+        str_repr += 'Unknown Precip '
+
+    # Obscurations
+    if 'BR' in cond:
+        str_repr += 'Mist '
+    if 'FG' in cond:
+        str_repr += 'Fog '
+    if 'FU' in cond:
+        str_repr += 'Smoke '
+    if 'VA' in cond:
+        str_repr += 'Volcanic Ash '
+    if 'DU' in cond:
+        str_repr += 'Widespread Dust '
+    if 'SA' in cond:
+        str_repr += 'Sand '
+    if 'HZ' in cond:
+        str_repr += 'Haze '
+    if 'PY' in cond:
+        str_repr += 'Spray '
+
+    # Other
+    if 'PO' in cond:
+        str_repr += "Well developed dust/sand whirls "
+    if 'SQ' in cond:
+        str_repr += 'Squalls '
+    if 'FC' in cond:
+        if '+FC' not in cond:
+            str_repr += 'Funnel Cloud '
+    if 'SS' in cond:
+        str_repr += 'Sandstorm/Duststorm '
+
+    return  {'parsed' : 'None', 'value' : cond, 'string' : str_repr}
 
 def coverage(cov):
     """Function to format coverage"""
@@ -228,11 +325,11 @@ def coverage(cov):
     for index, element in enumerate(coverage_split):
         if 'CLR' in element:
             d[f'l{index}_cond'] = 'Clear'
-            d[f'l{index}_hgt'] = '0'
-            string = 'Clear.'
+            d[f'l{index}_hgt'] = '0000'
+            string = 'Clear'
         else:
 
-            if index > 2: # adds in the comma appropriately.
+            if index > 0: # adds in the comma appropriately.
                 string += ", "
 
             # extract the conditions, make english-like, same with height.
@@ -240,10 +337,16 @@ def coverage(cov):
             height =  str(int(element[3:]) * 100)
             # add into dictionary at appropriate height level.
             # syntax a bit tricky, but iterating through l1_hgt, l2_hgt, etc
-            d[f'l{index}_cond'] = conditions
-            d[f'l{index}_hgt'] = height
-            # form the string and append.
-            string += conditions + " at " + height + " feet"
+            d[f'l{str(index + 1)}_cond'] = conditions
+
+            if height != '0':
+                d[f'l{str(index + 1)}_hgt'] = height
+                # form the string and append.
+                string += conditions + " at " + height + " feet"
+            else:
+                d[f'l{str(index + 1)}_hgt'] = "0000"
+                # form the string and append.
+                string += conditions + " at surface"
 
     string += '.' # append a period to the string.
     d['string'] = string # add in the string.
@@ -258,6 +361,15 @@ def temperature(t):
     if t == 'None':
         return d
 
+    d['parsed'] = t
+    d['unit'] = 'C'
+
+    temp_c = int(t.split('/')[0].replace("M", '-'))
+    temp_f = round((9/5) * int(temp_c) + 32, 1)
+    str_repr = f'{temp_c}°C ({temp_f}°F)'
+    d['value'] = str(temp_c)
+    d['string'] = str_repr
+
     return d
 
 def dewpoint(td):
@@ -266,23 +378,43 @@ def dewpoint(td):
     d = {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
         'string' : "None"}
 
+    d = {'parsed' : 'None', 'value' : 'None', 'unit' : 'None',
+        'string' : "None"}
+
     if td == 'None':
         return d
+
+    d['parsed'] = td
+    d['unit'] = 'C'
+
+    temp_c = int(td.split('/')[1].replace("M", '-'))
+    temp_f = round((9/5) * int(temp_c) + 32, 1)
+    str_repr = f'{temp_c}°C ({temp_f}°F)'
+    d['value'] = str(temp_c)
+    d['string'] = str_repr
 
     return d
 
 def altimeter(alt):
     """Function to format altimeter"""
 
-    d = {'parsed' : 'A2972', 'value' : '29.72',
-        'unit' : 'inHg', 'string' : '29.72 inHg'}
+    d = {'parsed' : 'None', 'value' : 'None', 'unit' : 'None', 'string' : 'N/A'}
 
     if alt == 'None':
         return d
 
+    d['parsed'] = alt
+    d['value'] = alt[1:3] + "." + alt[3:]
+    d['unit'] = 'inHg'
+    d['string'] = f'{d["value"]} {d["unit"]}'
     return d
 
 def remarks(rmk):
     """Function to format remarks."""
 
-    return {'parsed' : 'None', 'string' : 'N/A'}
+    d = {'parsed' : 'None', 'string' : 'N/A'}
+
+    if rmk == 'None':
+        return d
+
+    return {'parsed' : f'RMK {rmk}', 'string' : rmk}

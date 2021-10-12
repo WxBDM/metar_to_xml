@@ -1,27 +1,22 @@
 <?xml version="1.0" ?>
 <data>
-	<metar value="KTPA 061453Z 15007KT 10SM SCT160 29/23 A3007 RMK AO2 SLP182 T02890233 51009"/>
-	<location value="KTPA"/>
-	<time day="06" time="1453" unit="Z"/>
-	<automated value="False"/>
-	<wind>
-		<direction value="SSE" angle="150" unit="degrees"/>
-		<speed value="7" unit="KT"/>
-		<gust value="0" unit="KT"/>
-	</wind>
-	<visibility value="10" unit="SM">
-		<rvr runway="None" distance="None" trend="None"/>
-	</visibility>
-	<wxconditions values="None"/>
-	<cloudcoverage>
-		<layer coverage="Scattered" height="16000" unit="Feet"/>
-		<layer coverage="None" height="None" unit="Feet"/>
-		<layer coverage="None" height="None" unit="Feet"/>
-		<layer coverage="None" height="None" unit="Feet"/>
-	</cloudcoverage>
-	<temperature value="29" unit="C"/>
-	<dewpoint value="23" unit="C"/>
-	<altimeter value="30.07" unit="In. Hg"/>
-	<remarks value="RMK AO2 SLP182 T02890233 51009"/>
+  <metar>KMBS 231423Z 33021G30KT 1 1/4SM R23/5000VP6000FT -RA BR SCT006 OVC010 10/09 A2970 RMK AO2 PK WND 33030/1417 P0005 T01000089</metar>
+  <location>KMBS</location>
+  <date day="23" time="1423" unit="Z">23rd at 14:23z</date>
+  <auto>No</auto>
+  <wind direction="NNW" speed="21" gust="30" unit="kts">North-Northwest at 21kts (24.17mph), gusting at 30kts (34.52mph).</wind>
+  <visibility value="1 1/4" unit="SM">1 1/4 Statute Miles</visibility>
+  <rvr runway="23" value="5000 to &gt;6000" unit="feet">Runway 23 at 5000 to &gt;6000 feet.</rvr>
+  <conditions value="-RA BR">Light Rain Mist </conditions>
+  <cloudcoverage>
+    Scattered at 600 feet.
+    <layer coverage="Scattered" height="600" unit="feet"/>
+    <layer coverage="None" height="None" unit="feet"/>
+    <layer coverage="None" height="None" unit="feet"/>
+    <layer coverage="None" height="None" unit="feet"/>
+  </cloudcoverage>
+  <temperature value="10" unit="C">10°C (50.0°F)</temperature>
+  <dewpoint value="9" unit="C">9°C (48.2°F)</dewpoint>
+  <altimeter value="29.70" unit="inHg">29.70 inHg</altimeter>
+  <remarks>RMK AO2 PK WND 33030/1417 P0005 T01000089</remarks>
 </data>
-<!--XML file created by METAR parser.-->

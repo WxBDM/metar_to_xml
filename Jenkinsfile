@@ -5,6 +5,7 @@ pipeline {
         any { image 'python:3' }
     }
     stages {
+        boolean currentBuildFailed = false
         stage('Install Packages') {
             steps {
               sh "source mtx/bin/activate && python3 -m pip install -r requirements.txt"
@@ -35,10 +36,6 @@ pipeline {
     post {
       always {
         cleanWs()
-        if (stageResult.equals("SUCCESS")) {
-           } else {
-              error 'FAIL' //sh "exit 1" // this fails the stage
-           }
       }
     }
 }

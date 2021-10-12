@@ -253,13 +253,13 @@ class TestFormatterFunctionDictionaryExactly:
                     {'parsed' : '15006KT', 'direction' : 'SSE', 'speed' : '6',
                         'gust' : '0', 'unit' : 'kts', 'string' : 'South-Southeast at 6kts (6.90mph).'},
                     {'parsed' : '00000KT', 'direction' : 'Calm', 'speed' : '0',
-                        'gust' : '0', 'unit' : 'kts', 'string' : 'Calm (0mph).'},
+                        'gust' : '0', 'unit' : 'kts', 'string' : 'Calm (0.00mph).'},
                     {'parsed' : '25010KT', 'direction' : 'WSW', 'speed' : '10',
                         'gust' : '0', 'unit' : 'kts', 'string' : 'West-Southwest at 10kts (11.51mph).'},
                     # rvr metar
                     {'parsed' : '33021G30KT', 'direction' : 'NNW', 'speed' : '21',
                         'gust' : '30', 'unit' : 'kts',
-                        'string' : 'North-Northwest at 21kts (21.16mph), gusting at 30kts (34.52mph).'}]
+                        'string' : 'North-Northwest at 21kts (24.17mph), gusting at 30kts (34.52mph).'}]
 
         # TODO: add the test cases here. Guarenteed to fail until done.
         self.run_and_assert(expected, wind, all_parsed, 'wind',
@@ -353,14 +353,14 @@ class TestFormatterFunctionDictionaryExactly:
                     'l3_cond' : 'Scattered', 'l3_hgt' : '11000',
                     'l4_cond' : 'Broken', 'l4_hgt' : '16000',
                     'unit' : 'feet',
-                    'string' : 'Few at 2000 feet, Few at 3800 feet, Scattered at \
-                                11000 feet, Broken at 16000 feet.'},
+                    'string' : 'Few at 2000 feet, Few at 3800 feet, Scattered at ' +
+                                '11000 feet, Broken at 16000 feet.'},
                     {'parsed' : 'None',
                     'l1_cond' : 'None', 'l1_hgt' : 'None',
                     'l2_cond' : 'None', 'l2_hgt' : 'None',
                     'l3_cond' : 'None', 'l3_hgt' : 'None',
                     'l4_cond' : 'None', 'l4_hgt' : 'None',
-                    'unit' : 'feet', 'string' : 'N/A'},
+                    'unit' : 'None', 'string' : 'N/A'},
                     {'parsed' : 'BKN005 OVC010',
                     'l1_cond' : 'Broken', 'l1_hgt' : '500',
                     'l2_cond' : 'Overcast', 'l2_hgt' : '1000',
@@ -374,16 +374,16 @@ class TestFormatterFunctionDictionaryExactly:
     def test_temperature_formatting(self, all_parsed):
         """Tests the temperature formatting."""
 
-        expected = [{'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
-                        'string' : "11°C (51.8°F)"},
+        expected = [{'parsed' : '25/21', 'value' : '25', 'unit' : 'C',
+                        'string' : "25°C (77.0°F)"},
                     {'parsed' : '32/24', 'value' : '32', 'unit' : 'C',
                         'string' : "32°C (89.6°F)"},
                     {'parsed' : '27/M01', 'value' : '27', 'unit' : 'C',
                         'string' : "27°C (80.6°F)"},
                     {'parsed' : '27/23', 'value' : '27', 'unit' : 'C',
-                        'string' : "27°C (51.8°F)"},
+                        'string' : "27°C (80.6°F)"},
                     {'parsed' : 'M05/M06', 'value' : '-5', 'unit' : 'C',
-                        'string' : "-5°C (23°F)"},
+                        'string' : "-5°C (23.0°F)"},
                     {'parsed' : '11/09', 'value' : '11', 'unit' : 'C',
                         'string' : "11°C (51.8°F)"}]
 
@@ -392,8 +392,8 @@ class TestFormatterFunctionDictionaryExactly:
     def test_dewpoint_formatting(self, all_parsed):
         """Tests the dewpoint formatting."""
 
-        expected = [{'parsed' : '11/09', 'value' : '9', 'unit' : 'C',
-                        'string' : "9°C (48.2°F)"},
+        expected = [{'parsed' : '25/21', 'value' : '21', 'unit' : 'C',
+                        'string' : "21°C (69.8°F)"},
                     {'parsed' : '32/24', 'value' : '24', 'unit' : 'C',
                         'string' : "24°C (75.2°F)"},
                     {'parsed' : '27/M01', 'value' : '-1', 'unit' : 'C',
@@ -468,4 +468,4 @@ class TestFormatterFunctionDictionaryExactly:
         for expected_d in all_parsed:
             actual_d = format_parsed_information(expected_d)
             for element in actual_d:
-                assert isinstance(element, dict)
+                assert isinstance(actual_d[element], dict)

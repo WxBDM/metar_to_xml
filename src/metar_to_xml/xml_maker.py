@@ -1,6 +1,9 @@
 from xml.dom import minidom
+from xml.etree.ElementTree import Element, SubElement, Comment, tostring
+from xml.etree import ElementTree
 import os
 from parser import Parser
+from formatter import *
 import sys
 
 class XMLMaker:
@@ -11,17 +14,22 @@ class XMLMaker:
 
     def __init__(self):
 
+        self.root = Element('data')
+
         # Create document and create outer-most tag.
-        self.root = minidom.Document()
-        self.data = self.root.createElement('data')
-        self.root.appendChild(self.data)
+        # self.root = minidom.Document()
+        # self.data = self.root.createElement('data')
+        # self.root.appendChild(self.data)
 
     def save(self, verbose = False):
         """Writes and saves the XML file"""
 
         save_file = "../mtx/src/uploads/parsed_metar.xml"
 
-        xml_str = self.root.toprettyxml(indent = "\t")
+        rough_string = tostring(self.root, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        xml_str = reparsed.toprettyxml(indent="  ")
+
         if os.path.exists(save_file):
             os.remove(save_file)
 
@@ -38,165 +46,126 @@ class XMLMaker:
         else:
             node.appendChild(self.root.createComment(comment))
 
-    def add_location(self, value):
+    def add_location(self, info):
         """Adds location information to the XML file"""
 
-        locationChild = self.root.createElement('location')
-        locationChild.setAttribute('value', value)
-        self.data.appendChild(locationChild)
+        # create new dictionary in-place to be used as elements.
+        node = SubElement(self.root, 'location',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_date(self, date):
+    def add_date(self, info):
         """Adds time information to the XML file"""
 
-        timeChild = self.root.createElement('time')
-        timeChild.setAttribute('day', date[0])
-        timeChild.setAttribute('time', date[1])
-        timeChild.setAttribute('unit', 'Z')
-        self.data.appendChild(timeChild)
+        node = SubElement(self.root, 'date',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_auto(self, auto):
-        autoChild = self.root.createElement('automated')
-        autoChild.setAttribute('value', auto)
-        self.data.appendChild(autoChild)
+    def add_auto(self, info):
 
-    def add_wind(self, wind):
+        node = SubElement(self.root, 'auto',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
+
+    def add_wind(self, info):
         """Adds wind information to the XML file."""
 
-        windChild = self.root.createElement('wind')
+        node = SubElement(self.root, "wind",
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-        windDirectionChild = self.root.createElement("direction")
-        windDirectionChild.setAttribute('value', wind[0])
-        windDirectionChild.setAttribute('angle', wind[1])
-        windDirectionChild.setAttribute('unit', 'degrees')
-
-        windSpeedChild = self.root.createElement("speed")
-        windSpeedChild.setAttribute("value", wind[2])
-        windSpeedChild.setAttribute("unit", "KT")
-
-        windGustChild = self.root.createElement("gust")
-        windGustChild.setAttribute('value', wind[3])
-        windGustChild.setAttribute("unit", "KT")
-        windChild.appendChild(windGustChild)
-
-        windChild.appendChild(windDirectionChild)
-        windChild.appendChild(windSpeedChild)
-        windChild.appendChild(windGustChild)
-        self.data.appendChild(windChild)
-
-    def add_visibility_and_rvr(self, vis, rvr):
+    def add_visibility_and_rvr(self, info, rvr_info):
         """Adds visibilty and rvr information to the XML file.
 
         Grouped together because rvr is nested in visibility info"""
 
-        visChild = self.root.createElement("visibility")
+        node = SubElement(self.root, "visibility",
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-        visChild.setAttribute('value', vis)
-        visChild.setAttribute('unit', 'SM')
+        rvr_node = SubElement(self.root, "rvr",
+            {key:val for key, val in rvr_info.items() if key not in ['parsed', 'string']})
+        rvr_node.text = rvr_info['string']
 
-        rvrChild = self.root.createElement("rvr")
-        rvrChild.setAttribute("runway", rvr[0])
-        rvrChild.setAttribute("distance", rvr[1])
-        rvrChild.setAttribute("trend", rvr[2])
-
-        visChild.appendChild(rvrChild)
-        self.data.appendChild(visChild)
-
-    def add_wx_conditions(self, wxcond):
+    def add_wx_conditions(self, info):
         """Adds wx conditions string to the XML file.
 
         Note that parser does not currently support detailed parsing. It only
         has a direct string from the metar"""
 
-        wxcondChild = self.root.createElement('wxconditions')
+        node = SubElement(self.root, 'conditions',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-        # CHANGE AT A LATER TIME
-        wxcondChild.setAttribute('values', "None")
-
-        self.data.appendChild(wxcondChild)
-
-    def add_clouds(self, clouds):
+    def add_clouds(self, info):
         """Adds cloud cover info to the XML file."""
 
-        cloudChild = self.root.createElement('cloudcoverage')
+        node = SubElement(self.root, "cloudcoverage")
+        node.text = info['string']
 
-        # itearte through all of the info found in clodus.
-        for cloud_type, height in clouds:
-            # create, add attributes, append
-            layer = self.root.createElement('layer')
-            layer.setAttribute('coverage', cloud_type)
-            layer.setAttribute('height', height)
-            layer.setAttribute('unit', 'Feet')
-            cloudChild.appendChild(layer)
+        for layer_n in range(1, 5):
+            layer_d = {'coverage' : info[f'l{layer_n}_cond'],
+                        'height' : info[f'l{layer_n}_hgt'], 'unit' : 'feet'}
+            layer_node = SubElement(node, "layer", layer_d)
 
-        self.data.appendChild(cloudChild)
-
-    def add_temperature(self, temp):
+    def add_temperature(self, info):
         """Adds temperature value to the XML file."""
 
-        tempChild = self.root.createElement('temperature')
-        tempChild.setAttribute('value', temp)
-        tempChild.setAttribute('unit', 'C')
-        self.data.appendChild(tempChild)
+        node = SubElement(self.root, 'temperature',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_dewpoint(self, td):
+    def add_dewpoint(self, info):
         """Adds temperature value to the XML file."""
 
-        tempChild = self.root.createElement('dewpoint')
-        tempChild.setAttribute('value', td)
-        tempChild.setAttribute('unit', 'C')
-        self.data.appendChild(tempChild)
+        node = SubElement(self.root, 'dewpoint',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_altimeter(self, alt):
+    def add_altimeter(self, info):
         """Adds altimiter value to xml file"""
 
-        altChild = self.root.createElement("altimeter")
-        altChild.setAttribute('value', alt)
-        altChild.setAttribute('unit', 'In. Hg')
-        self.data.appendChild(altChild)
+        node = SubElement(self.root, 'altimeter',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_remarks(self, remarks):
+    def add_remarks(self, info):
         """Adds remarks value to xml file"""
 
-        remarkChild = self.root.createElement("remarks")
-        remarkChild.setAttribute('value', remarks)
-        self.data.appendChild(remarkChild)
+        node = SubElement(self.root, 'remarks',
+            {key:val for key, val in info.items() if key not in ['parsed', 'string']})
+        node.text = info['string']
 
-    def add_metar(self, metar):
+    def add_metar(self, info):
         """Adds the original metar to the file"""
 
-        metarChild = self.root.createElement("metar")
-        metarChild.setAttribute('value', metar)
-        self.data.appendChild(metarChild)
+        node = SubElement(self.root, 'metar')
+        node.text = info
 
 def make_xml(metar): # the function that the user will call when they click the button
 
-    parsed = parse_metar(metar)
-    xml = XMLMaker()
+    parser = Parser(metar)
+    parsed = parser.parse()
 
-    xml.add_comment("XML file created by METAR parser.")
-    xml.add_metar(parsed['metar'])
-    xml.add_location(parsed['location'])
-    xml.add_date(parsed['date'])
-    xml.add_auto(parsed['is_auto'])
-    xml.add_wind(parsed['wind'])
-    xml.add_visibility_and_rvr(parsed['visibility'], parsed['runway_visual_range'])
-    xml.add_wx_conditions(parsed['wxconditions'])
-    xml.add_clouds(parsed['cloudcoverage'])
-    xml.add_temperature(parsed['temperature'])
-    xml.add_dewpoint(parsed['dewpoint'])
-    xml.add_altimeter(parsed['altimeter'])
-    xml.add_remarks(parsed['remarks'])
+    formatted = format_parsed_information(parsed)
+    print(formatted.keys())
+
+    xml = XMLMaker()
+    # xml.add_comment("XML file created by METAR parser.")
+    xml.add_metar(formatted['metar'])
+    xml.add_location(formatted['location'])
+    xml.add_date(formatted['date'])
+    xml.add_auto(formatted['is_auto'])
+    xml.add_wind(formatted['wind'])
+    xml.add_visibility_and_rvr(formatted['visibility'], formatted['rvr'])
+    xml.add_wx_conditions(formatted['wxconditions'])
+    xml.add_clouds(formatted['cloud_coverage'])
+    xml.add_temperature(formatted['temperature'])
+    xml.add_dewpoint(formatted['dewpoint'])
+    xml.add_altimeter(formatted['altimeter'])
+    xml.add_remarks(formatted['remarks'])
 
     xml.save()
-
-
-def parse_metar(metar):
-    """Calls parser class to parse the metar"""
-
-    parser = Parser(metar)
-    parser.parse()
-    parsed = parser.get_parsedObject()
-    return parsed.pack()
 
 if __name__ == "__main__":
     metar = sys.argv[1:]

@@ -5,6 +5,8 @@
 var metarParsed = document.getElementById("SubmitButton");
 metarParsed.onclick = function() {
 
+    document.getElementById("metar_display").innerHTML = 'Loading...'
+
     // Put the entire table and METAR on the screen.
     document.getElementById('metar_display').innerHTML = constructTable();
 }
@@ -30,6 +32,7 @@ class TableCreator {
   setTag(tag) {
     // gets a tag from the doc.
     this.element_cache = this.doc.getElementsByTagName(tag);
+    this.tag = tag
     return this.element_cache;
   }
 
@@ -37,6 +40,18 @@ class TableCreator {
     // gets an attribute from a given tag.
     this.attribute_tag_cache = this.element_cache[0].getAttribute(attr);
     return this.attribute_tag_cache;
+  }
+
+  getTextContent() {
+    try {
+      return this.element_cache[0].textContent
+    }
+    catch (err) {
+      let e_str = `Providing string: not in XML file. Tag: ${this.tag}. Error:`
+      console.log(e_str)
+      console.log(err)
+      return "Element not found in XML file."
+    }
   }
 
   getFullTableString() {
@@ -60,85 +75,45 @@ function constructTable() {
   let table = new TableCreator(xmlDoc);
 
   table.setTag("metar");
-  table.addRow("Original Metar", table.getAttr('value'));
+  table.addRow("Original Metar", table.getTextContent());
 
   table.setTag("location");
-  table.addRow("Location", table.getAttr("value"));
+  table.addRow("Location", table.getTextContent());
 
-  table.setTag("time");
-  table.addRow("Day", table.getAttr("day"));
-  table.addRow("Time", table.getAttr("time") + table.getAttr("unit"));
+  table.setTag("date");
+  table.addRow("Date/Time", table.getTextContent());
 
-  table.setTag("automated");
-  table.addRow("Automated", table.getAttr("value"));
+  table.setTag("auto");
+  table.addRow("Automated", table.getTextContent());
 
-  let wind_str = ""
-  table.setTag("direction");
-  if (table.getAttr('value') === 'VRB') {
-    wind_str += "Variable winds at "
-  }
-  else {
-    wind_str += `${table.getAttr('value')} winds at `
-  }
-  table.setTag("speed");
-  wind_str += `${table.getAttr('value')} knots`
+  table.setTag("wind");
+  table.addRow("Wind", table.getTextContent());
 
-  table.setTag("gust");
-  if (table.getAttr("value") != 0) {
-    wind_str += `, Gusting at ${table.getAttr('value')} knots.`
-  }
-  else {
-    wind_str += '.' // it's a sentence, need to end it properly :^)
-  }
-  table.addRow("Wind", wind_str);
-
-  // TODO: visibility
   table.setTag("visibility");
-  table.addRow("Visibility", `${table.getAttr("value")} SM`);
+  table.addRow("Visibility", table.getTextContent());
 
-  // RVR. Not always there.
   table.setTag("rvr");
-  let runway_attr = table.getAttr("runway");
-  if (runway_attr !== "None") {
-    let rvr_str = "";
-    rvr_str += `Runway: ${runway_attr}\n`;
-    rvr_str += `Distance: ${table.getAttr("distance")}`;
-    let trend_attr = table.getAttr("trend");
-    if (trend_attr !== "None") {
-      rvr_str += `\nTrend: ${trend_attr}`;
-    }
-    table.addRow("Runway Visual Range", rvr_str);
+  if (table.getTextContent() !== 'N/A') {
+    table.addRow("Runway Visual Range", table.getTextContent());
   }
 
-  //always None until parser gets updated.
-  table.setTag("wxconditions");
-  table.addRow("Conditions", "N/A (not implemented)");
+  table.setTag("conditions");
+  table.addRow("Conditions", table.getTextContent());
 
-  let layers = table.setTag("layer");
-  let cloud_str = ""
-  for (let i = 0; i < layers.length; i++) {
-    let coverage_attr = layers[i].getAttribute("coverage");
-    if (coverage_attr !== "None") {
-      let height_attr = layers[i].getAttribute("height");
-      cloud_str += `${coverage_attr} at ${height_attr} FT, `
-    }
-  }
-  if (cloud_str === "") {
-    cloud_str = "None";
-  }
-  table.addRow("Cloud Coverage", cloud_str);
+  table.setTag("cloudcoverage");
+  table.addRow("Cloud Coverage", table.getTextContent());
 
   table.setTag("temperature");
-  table.addRow("Temperature", table.getAttr("value") + " " + table.getAttr("unit"));
+  table.addRow("Temperature", table.getTextContent());
 
   table.setTag("dewpoint");
-  table.addRow("Dewpoint", table.getAttr("value") + " " + table.getAttr("unit"));
+  table.addRow("Dewpoint", table.getTextContent());
 
   table.setTag("altimeter");
-  table.addRow("Altimeter", table.getAttr("value") + " " + table.getAttr("unit"));
+  table.addRow("Altimeter", table.getTextContent());
 
   table.setTag("remarks");
-  table.addRow("Remarks", table.getAttr("value"));
+  table.addRow("Remarks", table.getTextContent());
 
   return table.getFullTableString();
 }
