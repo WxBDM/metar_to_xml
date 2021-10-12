@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <data>
-  <metar>KMPV 121351Z AUTO 00000KT 1/4SM FG VV001 12/11 A3020 RMK AO2 SLP229 T01170111</metar>
-  <location>KMPV</location>
-  <date day="12" time="1351" unit="Z">12th at 13:51z</date>
+  <metar>CYHU 121500Z AUTO 20007KT 9SM 20/15 A3009 RMK CLD MISG SLP191 DENSITY ALT 600FT</metar>
+  <location>CYHU</location>
+  <date day="12" time="1500" unit="Z">12th at 15:00z</date>
   <auto>Yes</auto>
-  <wind direction="Calm" speed="0" gust="0" unit="kts">Calm (0.00mph).</wind>
-  <visibility value="Vertical Visibility: 100" unit="ft">Vertical Visibility: 100 Feet</visibility>
+  <wind direction="SSW" speed="7" gust="0" unit="kts">South-Southwest at 7kts (8.06mph).</wind>
+  <visibility value="None" unit="None">N/A</visibility>
   <rvr runway="None" value="None" unit="None">N/A</rvr>
-  <conditions value="FG">Fog</conditions>
+  <conditions value="None">N/A</conditions>
   <cloudcoverage>
     N/A
     <layer coverage="None" height="None" unit="feet"/>
@@ -15,8 +15,8 @@
     <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
   </cloudcoverage>
-  <temperature value="12" unit="C">12°C (53.6°F)</temperature>
-  <dewpoint value="11" unit="C">11°C (51.8°F)</dewpoint>
-  <altimeter value="30.20" unit="inHg">30.20 inHg</altimeter>
-  <remarks>RMK AO2 SLP229 T01170111</remarks>
+  <temperature value="20" unit="C">20°C (68.0°F)</temperature>
+  <dewpoint value="15" unit="C">15°C (59.0°F)</dewpoint>
+  <altimeter value="30.09" unit="inHg">30.09 inHg</altimeter>
+  <remarks>RMK CLD MISG SLP191 DENSITY ALT 600FT</remarks>
 </data>

@@ -106,7 +106,13 @@ class Parser:
 
     def wxconditions(self):
         regex = '\s([+-])?(VC)?(?:MI|PR|BC|DR|BL|SH|TS|FZ)?(?:DZ|RA|SN|SG|IC|PL|GR|GS|UP)?(\s)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS)?\s'
-        match = re.search(fr"{regex}", self._metar)
+
+        # Found anomylous metar CYHU 121500Z AUTO 20007KT 9SM 20/15 A3009 RMK CLD MISG SLP191 DENSITY ALT 600FT (10/12/21)
+        # conditions stated "Shallow Snow Grains", this was picked up in remarks (MISG)
+        # this is supposed to be "missing cloud". Added in logic below to split along remark and look at not that.
+
+        metar = self._metar.split('RMK')[0] # guarenteed to have RMK, so split it.
+        match = re.search(fr"{regex}", metar)
         if match is not None:
             self._d['conditions'] = match.group().strip()
 

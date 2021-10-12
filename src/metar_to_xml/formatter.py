@@ -49,9 +49,6 @@ except ModuleNotFoundError:
 
 def format_parsed_information(parsed):
 
-    print(parsed)
-    print(parsed['metar'])
-
     d = {'location' : location(parsed['location']),
         'date' : date(parsed['date']),
         'is_auto' : is_auto(parsed['is_auto']),
