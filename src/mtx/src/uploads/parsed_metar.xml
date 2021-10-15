@@ -1,22 +1,22 @@
 <?xml version="1.0" ?>
 <data>
-  <metar>CYHU 121500Z AUTO 20007KT 9SM 20/15 A3009 RMK CLD MISG SLP191 DENSITY ALT 600FT</metar>
-  <location>CYHU</location>
-  <date day="12" time="1500" unit="Z">12th at 15:00z</date>
-  <auto>Yes</auto>
-  <wind direction="SSW" speed="7" gust="0" unit="kts">South-Southwest at 7kts (8.06mph).</wind>
-  <visibility value="None" unit="None">N/A</visibility>
+  <metar>KOKC 130152Z 15023G30KT 10SM OVC012 21/18 A2972 RMK AO2 PK WND 15030/0152 SLP055 T02110183</metar>
+  <location>KOKC</location>
+  <date day="13" time="0152" unit="Z">13th at 01:52z</date>
+  <auto>No</auto>
+  <wind direction="SSE" speed="23" gust="30" unit="kts">South-Southeast at 23kts (26.47mph), gusting at 30kts (34.52mph).</wind>
+  <visibility value="10" unit="SM">10 Statute Miles</visibility>
   <rvr runway="None" value="None" unit="None">N/A</rvr>
   <conditions value="None">N/A</conditions>
   <cloudcoverage>
-    N/A
-    <layer coverage="None" height="None" unit="feet"/>
+    Overcast at 1200 feet.
+    <layer coverage="Overcast" height="1200" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
     <layer coverage="None" height="None" unit="feet"/>
   </cloudcoverage>
-  <temperature value="20" unit="C">20°C (68.0°F)</temperature>
-  <dewpoint value="15" unit="C">15°C (59.0°F)</dewpoint>
-  <altimeter value="30.09" unit="inHg">30.09 inHg</altimeter>
-  <remarks>RMK CLD MISG SLP191 DENSITY ALT 600FT</remarks>
+  <temperature value="21" unit="C">21°C (69.8°F)</temperature>
+  <dewpoint value="18" unit="C">18°C (64.4°F)</dewpoint>
+  <altimeter value="29.72" unit="inHg">29.72 inHg (1006.43 mb).</altimeter>
+  <remarks>RMK AO2 PK WND 15030/0152 SLP055 T02110183</remarks>
 </data>

@@ -412,7 +412,8 @@ def altimeter(alt):
     d['parsed'] = alt
     d['value'] = alt[1:3] + "." + alt[3:]
     d['unit'] = 'inHg'
-    d['string'] = f'{d["value"]} {d["unit"]}'
+    conversion_to_mb = round(float(d['value']) * 33.86389, 2)
+    d['string'] = f'{d["value"]} {d["unit"]} ({conversion_to_mb} mb).'
     return d
 
 def remarks(rmk):
